@@ -31,10 +31,18 @@
 > [!NOTE]
 > Esta es una **versión de demostración**: todos los trabajadores, centros, máquinas, órdenes y logos son ficticios. El código está listo para conectarse a tu propia hoja de cálculo.
 
+<div align="center">
+
+### 📘 [Manual de uso completo →](docs/MANUAL.md)
+<sub>Cada pantalla, cómo funcionan las fechas, todos los parámetros y los mensajes de error</sub>
+
+</div>
+
 ---
 
 ## 📑 Contenido
 
+- [📘 **Manual de uso** (documento aparte)](docs/MANUAL.md)
 - [✨ Características](#-características)
 - [🏗️ Cómo funciona](#️-cómo-funciona)
 - [🚀 Instalación en 5 pasos](#-instalación-en-5-pasos)
@@ -251,7 +259,8 @@ python -m http.server 8765
  ┣ 📜 Codigo.gs            → Backend: doGet, listas, estado del trabajador, guardado y validaciones
  ┣ 🌐 Index.html           → Frontend: interfaz móvil completa (plantilla HtmlService)
  ┣ 📄 LICENSE              → Licencia MIT
- ┣ 🖼️ docs/                → Capturas de la demo
+ ┣ 📘 docs/MANUAL.md       → Manual de uso detallado
+ ┣ 🖼️ docs/*.png           → Capturas de la demo
  ┗ 🧪 pruebas/
     ┣ gas_mock.js          → Simulador de servicios de Apps Script
     ┣ datos.js             → Datos ficticios de la hoja
