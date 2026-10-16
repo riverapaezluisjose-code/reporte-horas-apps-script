@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Pruebas frontend</title>
+<style>body{font:13px monospace;background:#fff;color:#111;padding:12px} .ok{color:#15803d} .fail{color:#b91c1c;font-weight:bold} iframe{width:420px;height:300px;border:1px solid #ccc}</style>
+</head><body>
+<h3 id="titulo">Ensayos de ejecución de la app</h3>
+<pre id="out">Ejecutando...</pre>
+<div id="marco"></div>
+<script>
+const APP = new URLSearchParams(location.search).get('app') || 'app.html';
+document.getElementById('titulo').textContent += ' — ' + APP;
+const esperar = ms => new Promise(r => setTimeout(r, ms));
+const T = '534 OPERARIO DEMO 534';
+const B = '502 OPERARIO DEMO 502';
+
+async function cargarApp(prep) {
+  localStorage.clear(); sessionStorage.clear();
+  if (prep) prep();
+  const cont = document.getElementById('marco'); cont.innerHTML = '';
+  const f = document.createElement('iframe'); f.src = APP + '?t=' + Date.now();
+  cont.appendChild(f);
+  await new Promise(r => f.onload = r);
+  await esperar(400); // sincronización inicial
+  return f.contentWindow;
+}
+function ultimoHabil(w) {
+  for (let i = 1; i < 10; i++) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const iso = w.formatearFechaA_ISO(d);
+    if (d.getDay() !== 0 && d.getDay() !== 6 && !(w.eval('LISTAS_DEFAULT').festivos || ['2026-10-12']).includes(iso)) return iso;
+  }
+}
+const $ = (w, id) => w.document.getElementById(id);
+async function elegirTrabajador(w, t) { $(w, 'trabajador').value = t; w.onSeleccionarTrabajador(t); await esperar(350); }
+function llenar(w, ini, fin, orden, cen, act, maq) {
+  if (ini !== null) $(w, 'horaInicio').value = ini;
+  $(w, 'horaFin').value = fin; $(w, 'numeroOrden').value = orden;
+  $(w, 'centroTrabajo').value = cen; $(w, 'actividad').value = act; $(w, 'maquina').value = maq;
+  w.validarHorasEnVivo();
+}
+function filasDia(w, t, f) { return w.eval('historialLocal').filter(r => r.trabajador === t && r.fechaReporte === f); }
+
+const pruebas = [];
+function prueba(nombre, fn) { pruebas.push({ nombre, fn }); }
+
+prueba('Carga: desplegables con las listas de la hoja (48 trabajadores, 13 centros, 15 actividades, máquinas)', async () => {
+  const w = await cargarApp();
+  const n = s => $(w, s).options.length - 1;
+  const maqs = [...$(w, 'maquina').options].map(o => o.value);
+  return (n('trabajador') === 48 && n('centroTrabajo') === 13 && n('actividad') === 15 && maqs.includes('98 - OTROS') && maqs.includes('83 - MAQUINA 83'))
+    || `trab=${n('trabajador')} cent=${n('centroTrabajo')} act=${n('actividad')} maq=${n('maquina')} 101=${maqs.includes('83 - MAQUINA 83')}`;
+});
+
+prueba('Trabajador NUEVO agregado en la hoja aparece y queda seleccionado al reabrir la app', async () => {
+  const nuevo = '192 OPERARIO NUEVO DEMO';
+  const w = await cargarApp(() => { sessionStorage.setItem('__extraTrab', JSON.stringify([nuevo])); localStorage.setItem('trabajadorGuardado', nuevo); });
+  await esperar(300);
+  const llamada = w.__llamadas.find(l => l.fn === 'obtenerDatosIniciales');
+  return ($(w, 'trabajador').value === nuevo && llamada && llamada.args[0] === nuevo) || `seleccionado="${$(w, 'trabajador').value}" consultó="${llamada && llamada.args[0]}"`;
+});
+
+prueba('Trabajador guardado que no estaba en la lista fija se conserva (antes se perdía)', async () => {
+  const w = await cargarApp(() => localStorage.setItem('trabajadorGuardado', T));
+  await esperar(300);
+  return $(w, 'trabajador').value === T || `seleccionado="${$(w, 'trabajador').value}"`;
+});
+
+prueba('Desayuno rápido: hereda hora, +15 min, Centro 0, Act 20, Máq "98 - OTROS"', async () => {
+  const w = await cargarApp();
+  await elegirTrabajador(w, T);
+  w.establecerFecha ? w.establecerFecha(ultimoHabil(w)) : ($(w, 'fechaReporte').value = ultimoHabil(w), w.cambiarFechaManual());
+  llenar(w, '700', '1000', '1234', '5 - CENTRO 5', '11 - FABRICACIÓN', '5 - MAQUINA 05');
+  w.guardarFilaLocal();
+  w.autoRellenarDesayuno();
+  const v = id => $(w, id).value;
+  return (v('horaInicio') === '1000' && v('horaFin') === '1015' && v('centroTrabajo') === '0 - OTROS' && v('actividad') === '20 - DESCANSO' && v('maquina') === '98 - OTROS')
+    || JSON.stringify({ ini: v('horaInicio'), fin: v('horaFin'), c: v('centroTrabajo'), a: v('actividad'), m: v('maquina') });
+});
+
+prueba('Editar una labor conserva su Centro, Actividad, Máquina y Orden', async () => {
+  const w = await cargarApp();
+  await elegirTrabajador(w, T);
+  const f = ultimoHabil(w);
+  $(w, 'fechaReporte').value = f; w.cambiarFechaManual();
+  llenar(w, '700', '1000', '1234', '5 - CENTRO 5', '11 - FABRICACIÓN', '5 - MAQUINA 05');
+  w.guardarFilaLocal();
+  w.editarFila(filasDia(w, T, f)[0].idRegistro);
+  const v = id => $(w, id).value;
+  return (v('centroTrabajo') === '5 - CENTRO 5' && v('actividad') === '11 - FABRICACIÓN' && v('maquina') === '5 - MAQUINA 05' && v('numeroOrden') === '1234' && v('horaFin') === '1000')
+    || JSON.stringify({ c: v('centroTrabajo'), a: v('actividad'), m: v('maquina'), o: v('numeroOrden'), fin: v('horaFin') });
+});
+
+prueba('Flujo completo: 3 labores + cierre → vista previa → envío → filas en "Registros" → app limpia', async () => {
+  const w = await cargarApp();
+  await elegirTrabajador(w, T);
+  const f = ultimoHabil(w);
+  $(w, 'fechaReporte').value = f; w.cambiarFechaManual();
+  llenar(w, '700', '1000', '1234', '5 - CENTRO 5', '11 - FABRICACIÓN', '5 - MAQUINA 05'); w.guardarFilaLocal();
+  w.autoRellenarDesayuno(); w.guardarFilaLocal();
+  llenar(w, null, '1619', '1234', '5 - CENTRO 5', '11 - FABRICACIÓN', '5 - MAQUINA 05'); w.guardarFilaLocal();
+  w.toggleBotonCierreRapido(); w.accionRevisarParaEnvio();
+  const modalAbierto = $(w, 'modalConfirmacion').style.display === 'flex';
+  const filasModal = $(w, 'fopnCuerpoTabla').rows.length;
+  const filasAntes = w.__libro._hojas['Registros'].getLastRow();
+  w.confirmarEnvioPlanilla();
+  await esperar(600);
+  const hoja = w.__libro._hojas['Registros'];
+  const nuevas = hoja._datos.slice(filasAntes, hoja.getLastRow());
+  const exito = $(w, 'modalExitoEnvio').style.display === 'flex';
+  const ok = modalAbierto && filasModal === 4 && nuevas.length === 4 && exito && $(w, 'exitoTotalHoras').innerText === '09:19:00'
+    && nuevas[3][5] === '' && nuevas.every(r => r[1] === T) && $(w, 'trabajador').value === '' && filasDia(w, T, f).length === 0;
+  return ok || JSON.stringify({ modalAbierto, filasModal, nuevas: nuevas.length, exito, total: $(w, 'exitoTotalHoras').innerText, trab: $(w, 'trabajador').value });
+});
+
+prueba('Jornada ya enviada: al volver a elegirla aparece bloqueada', async () => {
+  const w = await cargarApp();
+  const f = ultimoHabil(w);
+  w.guardarPlanillaLote([{ trabajador: T, fechaReporte: f, item: 1, horaInicio: '700', horaFin: '1500', numeroOrden: '0', centroTrabajo: '0 - OTROS', actividad: '11 - FABRICACIÓN', maquina: '5 - MAQUINA 05' }]);
+  await elegirTrabajador(w, T);
+  $(w, 'fechaReporte').value = f; w.cambiarFechaManual();
+  return $(w, 'bannerDiaBloqueado').style.display === 'flex' || 'banner no visible';
+});
+
+prueba('Doble envío desde otro dispositivo: el servidor rechaza y la app bloquea el día', async () => {
+  const w = await cargarApp();
+  await elegirTrabajador(w, T);
+  const f = ultimoHabil(w);
+  $(w, 'fechaReporte').value = f; w.cambiarFechaManual();
+  llenar(w, '700', '1500', '0', '5 - CENTRO 5', '11 - FABRICACIÓN', '5 - MAQUINA 05'); w.guardarFilaLocal();
+  // Otro dispositivo envía la misma jornada mientras tanto
+  w.guardarPlanillaLote([{ trabajador: T, fechaReporte: f, item: 1, horaInicio: '700', horaFin: '1500', numeroOrden: '0', centroTrabajo: '0 - OTROS', actividad: '11 - FABRICACIÓN', maquina: '5 - MAQUINA 05' }]);
+  const antes = w.__libro._hojas['Registros'].getLastRow();
+  w.abrirModalConfirmacion(); w.confirmarEnvioPlanilla();
+  await esperar(700);
+  const despues = w.__libro._hojas['Registros'].getLastRow();
+  return (despues === antes && $(w, 'bannerDiaBloqueado').style.display === 'flex') || `filas antes=${antes} después=${despues} banner=${$(w, 'bannerDiaBloqueado').style.display}`;
+});
+
+prueba('Cambio rápido de trabajador: una respuesta tardía no pisa los datos del trabajador actual', async () => {
+  const w = await cargarApp();
+  w.__retrasosPorLlamada = [600, 50]; // la consulta de T tarda más que la de B
+  $(w, 'trabajador').value = T; w.onSeleccionarTrabajador(T);
+  $(w, 'trabajador').value = B; w.onSeleccionarTrabajador(B);
+  await esperar(900);
+  return (w.eval('fechasHistoricasBackend').includes('2026-10-12') && w.eval('ultimaFechaRegistradaTrabajador') === '2026-10-12')
+    || `trabajador=${$(w, 'trabajador').value} fechas=${JSON.stringify(w.eval('fechasHistoricasBackend'))}`;
+});
+
+prueba('Sin conexión: usa la última copia de listas guardada en el dispositivo', async () => {
+  let w = await cargarApp(); // guarda caché
+  const cache = localStorage.getItem('listas_consolidado_cache');
+  w = await cargarApp(() => { localStorage.setItem('listas_consolidado_cache', cache); sessionStorage.setItem('__sinPlantilla', '1'); });
+  w.__fallarServidor = true; w.sincronizarDatosConBackend(); await esperar(300);
+  return ($(w, 'trabajador').options.length === 49 && /Fuera de línea/i.test($(w, 'syncBadge').innerText)) || `opciones=${$(w, 'trabajador').options.length} badge=${$(w, 'syncBadge').innerText}`;
+});
+
+prueba('Texto peligroso en la hoja se muestra como texto (no ejecuta HTML)', async () => {
+  const raro = '999 <img src=x onerror="window.parent.__xss=1"> "COMILLAS"';
+  window.__xss = 0;
+  const w = await cargarApp(() => sessionStorage.setItem('__extraTrab', JSON.stringify([raro])));
+  await esperar(200);
+  const opt = [...$(w, 'trabajador').options].find(o => o.value === raro);
+  return (opt && !window.__xss) || `opción=${!!opt} xss=${window.__xss}`;
+});
+
+prueba('Cambiar de fecha mientras se edita cancela la edición (no mezcla jornadas)', async () => {
+  const w = await cargarApp();
+  await elegirTrabajador(w, T);
+  const f = ultimoHabil(w);
+  $(w, 'fechaReporte').value = f; w.cambiarFechaManual();
+  llenar(w, '700', '1000', '1', '5 - CENTRO 5', '11 - FABRICACIÓN', '5 - MAQUINA 05'); w.guardarFilaLocal();
+  w.editarFila(filasDia(w, T, f)[0].idRegistro);
+  w.establecerFechaHoy();
+  return w.eval('idEditandoActualmente') === null || 'sigue en edición: ' + w.eval('idEditandoActualmente');
+});
+
+prueba('Botones: Salidas (Permiso, Fin jornada) a la izquierda y Descansos (Desayuno, Almuerzo) a la derecha', async () => {
+  const w = await cargarApp();
+  const grupos = [...w.document.querySelectorAll('.quick-fill-grupo')].map(g => g.innerText.replace(/\s+/g, ' ').trim());
+  const ok = grupos.length === 2 && /SALIDAS/i.test(grupos[0]) && /Permiso/.test(grupos[0]) && /Fin jornada/.test(grupos[0])
+    && /DESCANSOS/i.test(grupos[1]) && /Desayuno/.test(grupos[1]) && /Almuerzo/.test(grupos[1]);
+  const color = sel => w.getComputedStyle(w.document.querySelector(sel)).backgroundColor;
+  await elegirTrabajador(w, T); // fuera del modo gris para leer los colores reales
+  const colores = color('.btn-quick-cierre') === 'rgb(255, 237, 213)' && color('.btn-quick-almuerzo') === 'rgb(204, 251, 241)';
+  return (ok && colores) || JSON.stringify({ grupos, fin: color('.btn-quick-cierre'), alm: color('.btn-quick-almuerzo') });
+});
+
+for (const tipo of ['Permiso', 'Fin jornada']) {
+  prueba(`Tras añadir ${tipo}: nada se mueve; solo se puede editar (y al terminar de editar se vuelve a bloquear)`, async () => {
+    const w = await cargarApp();
+    await elegirTrabajador(w, T);
+    const f = ultimoHabil(w);
+    $(w, 'fechaReporte').value = f; w.cambiarFechaManual();
+    llenar(w, '700', '1200', '1234', '5 - CENTRO 5', '11 - FABRICACIÓN', '5 - MAQUINA 05'); w.guardarFilaLocal();
+    if (tipo === 'Permiso') { w.autoRellenarPermiso(); $(w, 'horaFin').value = '1400'; w.guardarFilaLocal(); }
+    else { w.toggleBotonCierreRapido(); w.guardarFilaLocal(); }
+    const d = id => $(w, id).disabled;
+    const bloqueado = d('trabajador') && d('fechaReporte') && d('btnFechaAyer') && d('btnFechaHoy') && d('horaInicio') && d('centroTrabajo')
+      && $(w, 'semanaTracker').classList.contains('tracker-bloqueado') && $(w, 'quickFillContainer').style.display === 'none'
+      && $(w, 'btnRevisarEnvio').style.display === 'flex' && !d('btnRevisarEnvio');
+    $(w, 'horaFin').value = '1300';
+    const agregaOtra = w.guardarFilaLocal();
+    w.editarFila(filasDia(w, T, f)[0].idRegistro);
+    const editable = !d('horaFin') && !d('centroTrabajo') && !d('btnAgregar') && d('trabajador') && d('fechaReporte');
+    $(w, 'numeroOrden').value = '5555';
+    const guardoEdicion = w.guardarFilaLocal();
+    const reBloqueado = d('centroTrabajo') && d('trabajador') && filasDia(w, T, f)[0].numeroOrden === '5555' && filasDia(w, T, f).length === 2;
+    return (bloqueado && agregaOtra === false && editable && guardoEdicion && reBloqueado)
+      || JSON.stringify({ bloqueado, agregaOtra, editable, guardoEdicion, reBloqueado });
+  });
+}
+
+prueba('Al eliminar el Permiso / Fin jornada la jornada se desbloquea', async () => {
+  const w = await cargarApp();
+  await elegirTrabajador(w, T);
+  const f = ultimoHabil(w);
+  $(w, 'fechaReporte').value = f; w.cambiarFechaManual();
+  llenar(w, '700', '1200', '1234', '5 - CENTRO 5', '11 - FABRICACIÓN', '5 - MAQUINA 05'); w.guardarFilaLocal();
+  w.toggleBotonCierreRapido(); w.guardarFilaLocal();
+  w.confirm = () => true;
+  w.eliminarFila(filasDia(w, T, f)[1].idRegistro);
+  return (!$(w, 'trabajador').disabled && !$(w, 'fechaReporte').disabled && !$(w, 'centroTrabajo').disabled) || 'sigue bloqueado';
+});
+
+prueba('Después de enviar: todo queda en gris, incluidos los días de la semana', async () => {
+  const w = await cargarApp();
+  await elegirTrabajador(w, T);
+  const f = ultimoHabil(w);
+  $(w, 'fechaReporte').value = f; w.cambiarFechaManual();
+  const colorPill = () => [...w.document.querySelectorAll('.day-pill')].map(p => w.getComputedStyle(p).backgroundColor);
+  const antes = colorPill();
+  llenar(w, '700', '1600', '1234', '5 - CENTRO 5', '11 - FABRICACIÓN', '5 - MAQUINA 05'); w.guardarFilaLocal();
+  w.toggleBotonCierreRapido(); w.accionRevisarParaEnvio(); w.confirmarEnvioPlanilla();
+  await esperar(700);
+  const despues = colorPill();
+  const gris = despues.every(c => c === 'rgb(226, 232, 240)');
+  const ok = w.document.body.classList.contains('modo-inactivo') && gris && new Set(antes).size > 1 && !$(w, 'trabajador').disabled && $(w, 'centroTrabajo').disabled;
+  return ok || JSON.stringify({ inactivo: w.document.body.classList.contains('modo-inactivo'), antes, despues });
+});
+
+prueba('Al elegir un trabajador después de enviar, la app vuelve a colores normales', async () => {
+  const w = await cargarApp();
+  await elegirTrabajador(w, T);
+  return (!w.document.body.classList.contains('modo-inactivo') && !$(w, 'centroTrabajo').disabled && !$(w, 'fechaReporte').disabled) || 'sigue inactiva';
+});
+
+async function diaConTresLabores() {
+  const w = await cargarApp();
+  await elegirTrabajador(w, T);
+  const f = ultimoHabil(w);
+  $(w, 'fechaReporte').value = f; w.cambiarFechaManual();
+  llenar(w, '730', '900', '4321', '5 - CENTRO 5', '11 - FABRICACIÓN', '5 - MAQUINA 05'); w.guardarFilaLocal();
+  llenar(w, null, '915', '0', '0 - OTROS', '20 - DESCANSO', '98 - OTROS'); w.guardarFilaLocal();
+  llenar(w, null, '1100', '4321', '6 - CENTRO 6', '16 - ALMACENAMIENTO', '7 - MAQUINA 07'); w.guardarFilaLocal();
+  return { w, f };
+}
+const avisoVisible = w => $(w, 'modalAviso').style.display === 'flex';
+
+prueba('Editar hora fin: avisa que cambiará la hora inicio de la labor siguiente y, al aceptar, la ajusta', async () => {
+  const { w, f } = await diaConTresLabores();
+  w.editarFila(filasDia(w, T, f)[0].idRegistro);
+  $(w, 'horaFin').value = '845';
+  const guardoDirecto = w.guardarFilaLocal();
+  const aviso = avisoVisible(w) && /#2/.test($(w, 'avisoMensaje').innerText) && /09:00/.test($(w, 'avisoMensaje').innerText) && /08:45/.test($(w, 'avisoMensaje').innerText);
+  $(w, 'avisoBtnAceptar').click();
+  const [l1, l2] = filasDia(w, T, f);
+  const ok = guardoDirecto === false && aviso && l1.horaFin === '845' && l2.horaInicio === '845' && l2.horasDedicadas === '00:30:00' && w.eval('idEditandoActualmente') === null;
+  return (ok && w.detectarCortesHorario(filasDia(w, T, f)).length === 0) || JSON.stringify({ guardoDirecto, aviso, l1: l1.horaFin, l2i: l2.horaInicio, l2d: l2.horasDedicadas });
+});
+
+prueba('Editar hora fin y Cancelar el aviso: no cambia nada', async () => {
+  const { w, f } = await diaConTresLabores();
+  w.editarFila(filasDia(w, T, f)[0].idRegistro);
+  $(w, 'horaFin').value = '845';
+  w.guardarFilaLocal();
+  $(w, 'avisoBtnCancelar').click();
+  const [l1, l2] = filasDia(w, T, f);
+  return (l1.horaFin === '900' && l2.horaInicio === '900' && !avisoVisible(w)) || JSON.stringify({ l1: l1.horaFin, l2: l2.horaInicio });
+});
+
+prueba('Editar hora fin pasando la hora fin de la labor siguiente: lo impide con un aviso', async () => {
+  const { w, f } = await diaConTresLabores();
+  w.editarFila(filasDia(w, T, f)[1].idRegistro); // labor 2: 09:00-09:15, la 3 termina 11:00
+  $(w, 'horaFin').value = '1130';
+  const r = w.guardarFilaLocal();
+  const [, l2, l3] = filasDia(w, T, f);
+  return (r === false && avisoVisible(w) && /No se puede/.test($(w, 'avisoTitulo').textContent) && l2.horaFin === '915' && l3.horaInicio === '915') || JSON.stringify({ r, l2: l2.horaFin, l3: l3.horaInicio });
+});
+
+prueba('Validador al enviar: detecta horas descuadradas, las marca en rojo y las ajusta al aceptar', async () => {
+  const { w, f } = await diaConTresLabores();
+  const regs = filasDia(w, T, f);
+  regs[0].horaFin = '845'; w.recalcularLabor(regs[0]); // descuadre como el de la captura
+  w.actualizarInterfazCompleta();
+  const rojas = w.document.querySelectorAll('#cuerpoTabla td.celda-error').length;
+  w.abrirModalConfirmacion();
+  const aviso = avisoVisible(w) && /Horas que no coinciden/.test($(w, 'avisoTitulo').textContent);
+  const previaCerrada = $(w, 'modalConfirmacion').style.display !== 'flex';
+  $(w, 'avisoBtnAceptar').click();
+  const ok = rojas === 1 && aviso && previaCerrada && filasDia(w, T, f)[1].horaInicio === '845'
+    && $(w, 'modalConfirmacion').style.display === 'flex' && w.document.querySelectorAll('#cuerpoTabla td.celda-error').length === 0;
+  return ok || JSON.stringify({ rojas, aviso, previaCerrada, ini2: filasDia(w, T, f)[1].horaInicio, previa: $(w, 'modalConfirmacion').style.display });
+});
+
+prueba('Resumen tras enviar: botón "Listo" conserva su color y aparece el logo arriba', async () => {
+  const w = await cargarApp();
+  await elegirTrabajador(w, T);
+  const f = ultimoHabil(w);
+  $(w, 'fechaReporte').value = f; w.cambiarFechaManual();
+  llenar(w, '700', '1600', '1234', '5 - CENTRO 5', '11 - FABRICACIÓN', '5 - MAQUINA 05'); w.guardarFilaLocal();
+  w.toggleBotonCierreRapido(); w.accionRevisarParaEnvio(); w.confirmarEnvioPlanilla();
+  await esperar(700);
+  const btn = w.document.querySelector('#modalExitoEnvio .btn-primary');
+  const color = w.getComputedStyle(btn).backgroundColor;
+  const logo = w.document.querySelector('#modalExitoEnvio .exito-logo');
+  const logoOk = logo && logo.src.startsWith('data:image/') && logo.compareDocumentPosition($(w, 'exitoTituloModal')) & 4;
+  const previaLogo = w.document.querySelector('.fopn-logo').src.startsWith('data:image/');
+  return (color === 'rgb(0, 75, 135)' && logoOk && previaLogo) || JSON.stringify({ color, logoOk: !!logoOk, previaLogo });
+});
+
+(async () => {
+  const res = [];
+  for (const p of pruebas) {
+    try { const r = await p.fn(); res.push({ nombre: p.nombre, ok: r === true, detalle: r === true ? '' : String(r) }); }
+    catch (e) { res.push({ nombre: p.nombre, ok: false, detalle: 'EXCEPCIÓN: ' + e.message }); }
+  }
+  const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  document.getElementById('out').innerHTML = res.map(r => `<span class="${r.ok ? 'ok' : 'fail'}">${r.ok ? 'PASA ' : 'FALLA'}</span> ${esc(r.nombre)}${r.detalle ? ' → ' + esc(r.detalle) : ''}`).join('\n')
+    + `\n\n<b>${res.filter(r => r.ok).length}/${res.length} ensayos pasan</b>`;
+  window.__resultados = res;
+})();
+</script>
+</body></html>

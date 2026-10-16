@@ -1,0 +1,7 @@
+# Archivos generados por pruebas/setup.py
+pruebas/app.html
+pruebas/codigo.js
+
+# Sistema
+.DS_Store
+Thumbs.db

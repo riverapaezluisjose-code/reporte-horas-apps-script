@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Pruebas backend</title>
+<style>body{font:13px monospace;background:#fff;color:#111;padding:12px} .ok{color:#15803d} .fail{color:#b91c1c;font-weight:bold}</style>
+</head><body>
+<h3>Pruebas de Codigo.gs (simulador Apps Script)</h3>
+<pre id="out"></pre>
+<script src="gas_mock.js"></script>
+<script src="datos.js"></script>
+<script src="codigo.js"></script>
+<script>
+const resultados = [];
+function prueba(nombre, fn) {
+  reiniciar();
+  try {
+    const r = fn();
+    resultados.push({ nombre, ok: r === true, detalle: r === true ? '' : String(r) });
+  } catch (e) {
+    resultados.push({ nombre, ok: false, detalle: 'EXCEPCIÓN: ' + e.message });
+  }
+}
+function reiniciar(extraTrab, festivos) {
+  __libro._hojas = {};
+  __libro._set('Consolidado Codigos', armarConsolidado(extraTrab, festivos));
+  __libro._set('Registros', armarRegistros());
+  __activo = true; __lockOcupado = false; __locksLiberados = 0;
+}
+function hoyIso() { return Utilities.formatDate(new Date(), 'America/Bogota', 'yyyy-MM-dd'); }
+function diasAtras(n) { return Utilities.formatDate(new Date(Date.now() - n * 86400000), 'America/Bogota', 'yyyy-MM-dd'); }
+function lote(trab, fecha, filas) {
+  return filas.map((f, i) => Object.assign({ trabajador: trab, fechaReporte: fecha, item: i + 1, numeroOrden: '0',
+    centroTrabajo: '0 - OTROS', actividad: '11 - FABRICACIÓN', maquina: '5 - MAQUINA 05', esCierre: false }, f));
+}
+const T = '534 OPERARIO DEMO 534';
+// Último día hábil anterior a hoy que no sea festivo
+function ultimoHabil() {
+  for (let i = 1; i < 10; i++) {
+    const iso = diasAtras(i); const u = Number(Utilities.formatDate(new Date(Date.now() - i * 86400000), 'America/Bogota', 'u'));
+    if (u <= 5 && LISTAS_DEFAULT.festivos.indexOf(iso) === -1) return iso;
+  }
+}
+
+prueba('Listas: lee los 48 trabajadores de la hoja', () => {
+  const l = obtenerListasConsolidado();
+  return (l.trabajadores.length === 48 &&l.fuente === 'Consolidado Codigos') || ('trabajadores=' + l.trabajadores.length + ' fuente=' + l.fuente);
+});
+prueba('Listas: máquinas de la hoja + "0 - NINGUNA" agregada, "98 - OTROS" de la hoja sin duplicar', () => {
+  const l = obtenerListasConsolidado();
+  const ok = l.maquinas[0] === '0 - NINGUNA' && l.maquinas.length === COL_MAQ.length + 1 && l.maquinas.filter(m => m === '98 - OTROS').length === 1;
+  return ok || JSON.stringify(l.maquinas.slice(0, 3)) + ' total=' + l.maquinas.length;
+});
+prueba('Si la hoja renombra la 98 (ej. "98 - MANUAL"), igual existe "98 - OTROS" para los botones', () => {
+  const h = __libro._hojas['Consolidado Codigos']; h._datos.forEach(f => { if (f[3] === '98 - OTROS') f[3] = '98 - MANUAL'; });
+  const l = obtenerListasConsolidado();
+  return (l.maquinas.indexOf('98 - OTROS') > -1 && l.maquinas.indexOf('98 - MANUAL') > -1) || JSON.stringify(l.maquinas.slice(0, 3));
+});
+prueba('Listas: centros (13) y actividades (15) de la hoja', () => {
+  const l = obtenerListasConsolidado();
+  return (l.centros.length === 13 && l.actividades.length === 15) || (l.centros.length + '/' + l.actividades.length);
+});
+prueba('Trabajador NUEVO agregado en la hoja aparece en la app', () => {
+  reiniciar(['192 OPERARIO NUEVO DEMO']);
+  return obtenerListasConsolidado().trabajadores.indexOf('192 OPERARIO NUEVO DEMO') > -1 || 'no aparece';
+});
+prueba('Columna opcional "Festivos" (fecha tipo Date y texto) se suma a los festivos', () => {
+  reiniciar(null, [new Date(2028, 0, 1), '10/01/2028']);
+  const f = obtenerListasConsolidado().festivos;
+  return (f.indexOf('2028-01-01') > -1 && f.indexOf('2028-01-10') > -1) || 'festivos no leídos';
+});
+prueba('Sin hoja Consolidado → listas de respaldo', () => {
+  __libro._del('Consolidado Codigos');
+  const l = obtenerListasConsolidado();
+  return (l.fuente === 'predeterminado' && l.trabajadores.length === 32) || l.fuente;
+});
+prueba('Script independiente (sin libro activo) → abre por ID', () => {
+  __activo = false; __openByIdLlamado = null;
+  obtenerListasConsolidado();
+  return __openByIdLlamado === CONFIG.SPREADSHEET_ID || 'openById no usado';
+});
+prueba('doGet inyecta listas en la plantilla sin "<" (no rompe el <script>)', () => {
+  const malicioso = '501 OPERARIO <\/script><b>x';
+  __libro._hojas['Consolidado Codigos']._datos[1][0] = malicioso;
+  const salida = doGet();
+  const json = salida._t.datosIniciales;
+  return (json.indexOf('<') === -1 && JSON.parse(json).trabajadores[0] === malicioso) || json.slice(0, 80);
+});
+prueba('Estado: lee fechas Date, "yyyy-mm-dd" y "dd/mm/yyyy"', () => {
+  const a = obtenerEstadoTrabajador('502 OPERARIO DEMO 502').fechasReportadas;
+  const b = obtenerEstadoTrabajador('503 OPERARIO DEMO 503').fechasReportadas;
+  const c = obtenerEstadoTrabajador('900 OPERARIO DEMO 900').fechasReportadas;
+  return (a[0] === '2026-10-12' && b[0] === '2026-10-12' && c[0] === '2026-10-05') || JSON.stringify([a, b, c]);
+});
+prueba('Pendientes: no cuenta sábados, domingos, festivos ni HOY', () => {
+  const e = obtenerEstadoTrabajador(T);
+  const malos = e.diasPendientesHistoricos.filter(iso => {
+    const d = new Date(iso + 'T12:00:00-05:00');
+    const u = Number(Utilities.formatDate(d, 'America/Bogota', 'u'));
+    return u > 5 || LISTAS_DEFAULT.festivos.indexOf(iso) > -1 || iso === hoyIso();
+  });
+  return (malos.length === 0 && e.totalDiasPendientes > 0) || ('incorrectos: ' + malos.join(',') + ' total=' + e.totalDiasPendientes);
+});
+prueba('Guardar: escribe filas, recalcula horas en servidor (ignora valor del cliente)', () => {
+  const f = ultimoHabil();
+  const filas = lote(T, f, [
+    { horaInicio: '730', horaFin: '1000', horasDedicadas: '99:00:00' },
+    { horaInicio: '1000', horaFin: '1015' },
+    { horaInicio: '1015', horaFin: '', esCierre: true }
+  ]);
+  const r = guardarPlanillaLote(filas);
+  const h = __libro._hojas['Registros'];
+  const fila = h._datos[4];
+  const ok = r.success && r.count === 3 && h.getLastRow() === 7 && fila[4] === '07:30:00' && fila[5] === '10:00:00' && fila[6] === '02:30:00'
+    && h._datos[6][5] === '' && h._datos[6][6] === '' && r.resumen.minutosTotales === 165 && __locksLiberados === 1;
+  return ok || JSON.stringify({ r: r.mensaje, fila, locks: __locksLiberados });
+});
+prueba('Guardar: después de guardar, el día deja de estar pendiente', () => {
+  const f = ultimoHabil();
+  const r = guardarPlanillaLote(lote(T, f, [{ horaInicio: '700', horaFin: '1500' }]));
+  return (r.success && r.estadoTrabajador.fechasReportadas.indexOf(f) > -1 && r.estadoTrabajador.diasPendientesHistoricos.indexOf(f) === -1) || JSON.stringify(r.estadoTrabajador);
+});
+prueba('Anti-duplicado: la misma jornada no se puede enviar dos veces', () => {
+  const f = ultimoHabil();
+  guardarPlanillaLote(lote(T, f, [{ horaInicio: '700', horaFin: '1500' }]));
+  const filasAntes = __libro._hojas['Registros'].getLastRow();
+  const r = guardarPlanillaLote(lote(T, f, [{ horaInicio: '700', horaFin: '1500' }]));
+  return (!r.success && /ya fue registrada/.test(r.mensaje) && __libro._hojas['Registros'].getLastRow() === filasAntes && __locksLiberados === 2) || (r.mensaje + ' locks=' + __locksLiberados);
+});
+prueba('Rechaza fecha futura', () => {
+  const manana = Utilities.formatDate(new Date(Date.now() + 86400000), 'America/Bogota', 'yyyy-MM-dd');
+  const r = guardarPlanillaLote(lote(T, manana, [{ horaInicio: '700', horaFin: '800' }]));
+  return (!r.success && /futura/.test(r.mensaje)) || r.mensaje;
+});
+prueba('Rechaza lote con dos trabajadores o dos fechas', () => {
+  const f = ultimoHabil();
+  const filas = lote(T, f, [{ horaInicio: '700', horaFin: '800' }, { horaInicio: '800', horaFin: '900' }]);
+  filas[1].trabajador = '501 OPERARIO DEMO 501';
+  const r = guardarPlanillaLote(filas);
+  return (!r.success && /mismo trabajador/.test(r.mensaje)) || r.mensaje;
+});
+prueba('Rechaza hora inválida también en la fila de cierre', () => {
+  const r = guardarPlanillaLote(lote(T, ultimoHabil(), [{ horaInicio: '2575', horaFin: '', esCierre: true }]));
+  return (!r.success && /inválido/.test(r.mensaje)) || r.mensaje;
+});
+prueba('Rechaza labor > 16 h y jornada total > 16 h', () => {
+  const a = guardarPlanillaLote(lote(T, ultimoHabil(), [{ horaInicio: '600', horaFin: '2300' }]));
+  const b = guardarPlanillaLote(lote(T, ultimoHabil(), [{ horaInicio: '600', horaFin: '1400' }, { horaInicio: '1400', horaFin: '2230' }]));
+  return (!a.success && !b.success && /labor/.test(a.mensaje) && /total/.test(b.mensaje)) || (a.mensaje + ' | ' + b.mensaje);
+});
+prueba('Turno nocturno (2200 → 0600) = 8 h', () => {
+  const r = guardarPlanillaLote(lote(T, ultimoHabil(), [{ horaInicio: '2200', horaFin: '600' }]));
+  return (r.success && r.resumen.totalHoras === '08:00:00') || JSON.stringify(r);
+});
+prueba('Servidor ocupado (bloqueo tomado) → mensaje claro y no escribe', () => {
+  __lockOcupado = true;
+  const antes = __libro._hojas['Registros'].getLastRow();
+  const r = guardarPlanillaLote(lote(T, ultimoHabil(), [{ horaInicio: '700', horaFin: '800' }]));
+  return (!r.success && /ocupado/.test(r.mensaje) && __libro._hojas['Registros'].getLastRow() === antes) || r.mensaje;
+});
+prueba('Hoja Registros inexistente → se crea con cabeceras', () => {
+  __libro._del('Registros');
+  const r = guardarPlanillaLote(lote(T, ultimoHabil(), [{ horaInicio: '700', horaFin: '800' }]));
+  const h = __libro._hojas['Registros'];
+  return (r.success && h._datos[0][0] === 'Día de registro' && h.getLastRow() === 2) || r.mensaje;
+});
+prueba('Rechaza horas que no quedan en cadena (inicio ≠ fin anterior)', () => {
+  const antes = __libro._hojas['Registros'].getLastRow();
+  const r = guardarPlanillaLote(lote(T, ultimoHabil(), [{ horaInicio: '730', horaFin: '930' }, { horaInicio: '900', horaFin: '1000' }]));
+  return (!r.success && /coincidir/.test(r.mensaje) && __libro._hojas['Registros'].getLastRow() === antes) || r.mensaje;
+});
+prueba('horaAMinutos: casos límite', () => {
+  const casos = { '730': 450, '0730': 450, '07:30': 450, '0000': 0, '2359': 1439, '2400': null, '760': null, '12345': null, '': null, '7': null };
+  const malos = Object.keys(casos).filter(k => horaAMinutos(k) !== casos[k]);
+  return malos.length === 0 || ('fallan: ' + malos.join(','));
+});
+prueba('Lote vacío / nulo → mensaje sin excepción', () => {
+  return (!guardarPlanillaLote([]).success && !guardarPlanillaLote(null).success) || 'falló';
+});
+
+const out = document.getElementById('out');
+const okN = resultados.filter(r => r.ok).length;
+out.innerHTML = resultados.map(r => `<span class="${r.ok ? 'ok' : 'fail'}">${r.ok ? 'PASA ' : 'FALLA'}</span> ${r.nombre.replace(/</g, '&lt;')}${r.detalle ? ' → ' + r.detalle.replace(/</g, '&lt;') : ''}`).join('\n')
+  + `\n\n<b>${okN}/${resultados.length} pruebas pasan</b>`;
+window.__resultados = resultados;
+</script>
+</body></html>

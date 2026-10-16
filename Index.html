@@ -1,0 +1,2820 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Reporte de Horas - Empresa Demo (FO-000)</title>
+  <style>
+    :root {
+      --primary: #004b87;
+      --primary-dark: #002f56;
+      --primary-light: #e6f0fa;
+      --accent: #0284c7;
+      --success: #16a34a;
+      --success-light: #dcfce7;
+      --warning: #f59e0b;
+      --warning-light: #fef3c7;
+      --danger: #dc2626;
+      --danger-light: #fee2e2;
+      --surface: #ffffff;
+      --bg: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #cbd5e1;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 10px 25px -5px rgba(15, 23, 42, 0.15);
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 8px 8px 36px 8px;
+      max-width: 580px;
+      margin-left: auto;
+      margin-right: auto;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* HEADER OFICIAL */
+    .header-card {
+      background: #ffffff;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 10px;
+      text-align: center;
+      border-top: 5px solid var(--primary);
+      border-left: 1px solid #e2e8f0;
+      border-right: 1px solid #e2e8f0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .header-logo-img {
+      max-width: 250px;
+      width: 78%;
+      height: auto;
+      display: block;
+      margin: 0 auto 5px auto;
+    }
+    .header-sub {
+      font-size: 11px;
+      color: var(--primary-dark);
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .header-tag {
+      display: inline-block;
+      background: var(--primary-light);
+      border: 1px solid #bfdbfe;
+      color: var(--primary);
+      font-size: 9.5px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      margin-top: 4px;
+    }
+
+    /* CARDS */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid #e2e8f0;
+    }
+    .card-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0 0 8px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* CONTROL GROUPS */
+    .control-group {
+      margin-bottom: 10px;
+      position: relative;
+    }
+    .control-group:last-child {
+      margin-bottom: 0;
+    }
+    label {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    select, input[type="text"], input[type="date"] {
+      width: 100%;
+      height: 44px;
+      padding: 8px 12px;
+      font-size: 16px !important;
+      color: var(--text);
+      background-color: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    select:focus, input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background-color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    }
+    input[readonly] {
+      background-color: #f1f5f9 !important;
+      color: #334155 !important;
+      cursor: not-allowed;
+      border-color: #cbd5e1 !important;
+    }
+
+    /* SELECTOR DE TRABAJADOR PROFESIONAL EN AZUL (1 SOLA CELDA) */
+    #trabajador {
+      border: 1.5px solid #004b87;
+      color: #004b87;
+      font-weight: 700;
+      background-color: #f8fafc;
+    }
+    #trabajador:focus {
+      background-color: #f0f7ff;
+      border-color: #003366;
+      box-shadow: 0 0 0 3px rgba(0, 75, 135, 0.2);
+    }
+
+
+    /* FECHA */
+    .date-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .date-row input[type="date"] {
+      flex: 1;
+    }
+    .btn-quick-date {
+      height: 44px;
+      padding: 0 10px;
+      border: 1.5px solid var(--border);
+      background: #f8fafc;
+      color: var(--text);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: 0.15s ease;
+      user-select: none;
+    }
+    .btn-quick-date:active {
+      background: var(--primary-light);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* TRACKER SEMANAL */
+    .tracker-card {
+      background: #ffffff;
+      border-left: 4px solid var(--accent);
+    }
+    .tracker-header-info {
+      font-size: 10.5px;
+      color: var(--primary-dark);
+      background: #f0f7ff;
+      border: 1px solid #bae6fd;
+      padding: 5px 9px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .tracker-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-top: 6px;
+    }
+    .day-pill {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 2px;
+      border-radius: 9px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease;
+      background: #f1f5f9;
+      border: 2px solid transparent;
+      min-height: 50px;
+    }
+    .day-pill:active { transform: scale(0.96); }
+    .day-name {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      line-height: 1;
+    }
+    .day-num {
+      font-size: 12.5px;
+      font-weight: 800;
+      margin-top: 2px;
+      line-height: 1;
+    }
+    .day-indicator {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-top: 3px;
+      background: #cbd5e1;
+    }
+
+    .day-pill.status-reported { background: var(--success-light); color: #14532d; }
+    .day-pill.status-reported .day-indicator { background: var(--success); }
+
+    .day-pill.status-missing { background: var(--danger-light); color: #7f1d1d; }
+    .day-pill.status-missing .day-indicator { background: var(--danger); }
+
+    .day-pill.status-weekend { background: var(--warning-light); color: #78350f; }
+    .day-pill.status-weekend .day-indicator { background: var(--warning); }
+
+    .day-pill.status-weekend-reported { background: var(--success-light); border-color: var(--warning); color: #14532d; }
+    .day-pill.status-weekend-reported .day-indicator { background: var(--success); }
+
+    .day-pill.status-future { background: #f8fafc; color: #94a3b8; cursor: not-allowed; opacity: 0.65; }
+    .day-pill.day-selected { border-color: var(--primary) !important; box-shadow: 0 0 0 2px rgba(0, 75, 135, 0.25); transform: translateY(-2px); }
+
+    .tracker-legend {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px dashed #e2e8f0;
+      font-size: 9px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .legend-item { display: flex; align-items: center; gap: 3px; }
+    .legend-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+
+    /* LEYENDA COMPACTA DE DEUDA HISTÓRICA (ESPACIO MÍNIMO) */
+    .debt-compact-legend {
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      margin-top: 6px;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      line-height: 1.3;
+    }
+
+    /* AVISO BLOQUEO DÍA YA ENVIADO */
+    .locked-day-banner {
+      display: none;
+      background: #eff6ff;
+      border: 1.5px solid #93c5fd;
+      border-radius: var(--radius-sm);
+      padding: 9px 11px;
+      margin-top: 8px;
+      font-size: 11px;
+      color: #1e40af;
+      align-items: center;
+      gap: 8px;
+    }
+    .locked-day-banner b { display: block; margin-bottom: 2px; color: #1e3a8a; }
+
+    /* RESUMEN JORNADA */
+    .summary-card {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: var(--radius-sm);
+      padding: 9px 11px;
+      margin-bottom: 10px;
+    }
+    .summary-grid {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    .summary-val-box { display: flex; flex-direction: column; }
+    .summary-label {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .summary-total {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .summary-badge-extra {
+      display: inline-block;
+      padding: 3px 7px;
+      border-radius: 6px;
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+    }
+    .extra-pending { background: #e0f2fe; color: #0369a1; }
+    .extra-complete { background: #dcfce7; color: #15803d; }
+    .extra-overtime { background: #fef3c7; color: #b45309; border: 1px solid #fde047; }
+
+    /* TABLA */
+    .table-responsive {
+      overflow-x: auto;
+      border: 1px solid #e2e8f0;
+      border-radius: var(--radius-sm);
+      margin-bottom: 8px;
+      background: white;
+      width: 100%;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10.5px;
+      text-align: center;
+      table-layout: fixed;
+    }
+    th {
+      background: #004b87;
+      color: white;
+      padding: 6px 2px;
+      font-weight: 800;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.2px;
+      text-align: center;
+      word-break: break-word;
+    }
+    td {
+      padding: 5px 2px;
+      border-bottom: 1px solid #f1f5f9;
+      text-align: center;
+      vertical-align: middle;
+      color: #334155;
+      font-size: 10.5px;
+      word-break: break-word;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) { background-color: #f8fafc; }
+    .badge-orden {
+      display: inline-block;
+      padding: 2px 4px;
+      border-radius: 4px;
+      background: #e2e8f0;
+      font-weight: 700;
+      font-size: 10px;
+      color: #334155;
+    }
+    .badge-cierre {
+      display: inline-block;
+      padding: 2px 5px;
+      border-radius: 4px;
+      background: #f1f5f9;
+      color: #475569;
+      font-weight: 800;
+      font-size: 9px;
+      border: 1px solid #cbd5e1;
+    }
+    .table-actions { display: flex; gap: 4px; justify-content: center; }
+    .btn-action {
+      border: none;
+      padding: 5px 7px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      transition: 0.15s;
+    }
+    .btn-edit { background: #fef08a; color: #854d0e; }
+    .btn-delete { background: #fee2e2; color: #991b1b; }
+    .empty-state {
+      text-align: center;
+      padding: 18px 8px;
+      color: var(--text-muted);
+      font-size: 11.5px;
+    }
+
+    /* FORMULARIO */
+    .form-card { border-top: 4px solid var(--primary); }
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .time-preview-box {
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: var(--radius-sm);
+      padding: 6px 9px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .time-preview-val { font-weight: 700; color: var(--accent); }
+    .time-preview-error { color: var(--danger); font-weight: 700; font-size: 10.5px; }
+
+
+    /* ACCESOS RÁPIDOS: DESAYUNO, ALMUERZO, PERMISO */
+    .quick-fill-container {
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: var(--radius-sm);
+      padding: 8px 9px;
+      margin-bottom: 10px;
+    }
+    .quick-fill-label {
+      display: block;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 6px;
+    }
+    .quick-fill-grupos {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .quick-fill-grupo {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 5px;
+    }
+    .quick-fill-subtitulo {
+      display: block;
+      font-size: 9.5px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .quick-fill-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+    }
+    .btn-quick-fill {
+      height: 38px;
+      padding: 0 2px;
+      border: 1.5px solid transparent;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      white-space: normal;
+      text-align: center;
+      line-height: 1.15;
+      user-select: none;
+    }
+    .btn-quick-fill:active { transform: scale(0.96); }
+    .btn-quick-desayuno {
+      background: #fef3c7;
+      color: #92400e;
+      border-color: #fde68a;
+    }
+    .btn-quick-desayuno:active { background: #fde68a; }
+    .btn-quick-almuerzo {
+      background: #ccfbf1;
+      color: #0f766e;
+      border-color: #14b8a6;
+    }
+    .btn-quick-almuerzo:active { background: #99f6e4; }
+    .btn-quick-permiso {
+      background: #e0e7ff;
+      color: #3730a3;
+      border-color: #c7d2fe;
+    }
+    .btn-quick-permiso:active { background: #c7d2fe; }
+    /* Fin jornada (antes "Cierre Salida") */
+    .btn-quick-cierre {
+      background: #ffedd5;
+      color: #9a3412;
+      border: 1.5px solid #fed7aa;
+      font-weight: 900;
+    }
+    .btn-quick-cierre:active, .btn-quick-cierre.active {
+      background: #9a3412 !important;
+      color: #ffffff !important;
+      border-color: #7c2d12 !important;
+      box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.35);
+    }
+
+    /* BLOQUEOS: jornada cerrada (Permiso / Fin jornada) o día ya enviado */
+    select:disabled, input:disabled, button:disabled { cursor: not-allowed; }
+    .btn-quick-date:disabled { opacity: 0.45; }
+    #trabajador:disabled { opacity: 0.75; background-color: #f1f5f9; }
+    .tracker-bloqueado .day-pill { cursor: not-allowed; pointer-events: none; }
+    #seccionFormulario.panel-bloqueado input,
+    #seccionFormulario.panel-bloqueado select,
+    #seccionFormulario.panel-bloqueado label,
+    #seccionFormulario.panel-bloqueado .quick-fill-container,
+    #seccionFormulario.panel-bloqueado .time-preview-box,
+    #seccionFormulario.panel-bloqueado #btnAgregar { opacity: 0.45; }
+
+    /* MODO INACTIVO (sin trabajador, p. ej. justo después de enviar): todo en gris */
+    .modo-inactivo .day-pill,
+    .modo-inactivo .day-pill.day-selected {
+      background: #e2e8f0 !important;
+      color: #94a3b8 !important;
+      border-color: transparent !important;
+      box-shadow: none !important;
+      transform: none !important;
+      opacity: 1 !important;
+      pointer-events: none;
+    }
+    .modo-inactivo .day-indicator,
+    .modo-inactivo .legend-dot { background: #cbd5e1 !important; }
+    .modo-inactivo .tracker-legend,
+    .modo-inactivo .day-name { color: #94a3b8 !important; }
+    .modo-inactivo .tracker-card { border-left-color: #cbd5e1; }
+    .modo-inactivo .form-card { border-top-color: #cbd5e1; }
+    .modo-inactivo .summary-total,
+    .modo-inactivo .card-title { color: #94a3b8 !important; }
+    .modo-inactivo .summary-badge-extra { background: #e2e8f0 !important; color: #94a3b8 !important; border-color: transparent !important; }
+    .modo-inactivo .btn-quick-fill { background: #e2e8f0 !important; color: #94a3b8 !important; border-color: #cbd5e1 !important; }
+    .modo-inactivo #seccionFormulario .btn-primary { background: #94a3b8; }
+    .modo-inactivo .quick-fill-subtitulo { color: #94a3b8; }
+    .modo-inactivo #tablaRegistros th { background: #94a3b8; }
+
+    /* BOTONES */
+    .btn {
+      width: 100%;
+      height: 44px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      color: white;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      user-select: none;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: #004b87; }
+    .btn-success { background: #16a34a; }
+    .btn-secondary { background: #64748b; }
+
+    .btn-dual {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .edit-mode-indicator {
+      display: none;
+      background: #fef9c3;
+      border: 1px solid #fde047;
+      color: #854d0e;
+      padding: 5px 9px;
+      border-radius: var(--radius-sm);
+      font-size: 10.5px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* MODAL DE VISTA PREVIA */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.78);
+      backdrop-filter: blur(2px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      box-sizing: border-box;
+    }
+    .modal-box {
+      background: white;
+      width: 100%;
+      max-width: 490px;
+      border-radius: var(--radius);
+      padding: 10px 8px;
+      box-shadow: var(--shadow-lg);
+      max-height: 94vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      box-sizing: border-box;
+    }
+    
+    .fopn-sheet {
+      border: 2px solid #000;
+      background: #fff;
+      padding: 8px 6px;
+      font-family: Arial, Helvetica, sans-serif;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+      width: 100%;
+      overflow-x: hidden;
+    }
+    .fopn-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #000;
+      padding-bottom: 4px;
+      margin-bottom: 6px;
+    }
+    .fopn-logo {
+      max-height: 25px;
+      width: auto;
+    }
+    .fopn-code {
+      font-size: 9px;
+      font-weight: bold;
+      text-align: right;
+      line-height: 1.15;
+    }
+    .fopn-title {
+      text-align: center;
+      font-size: 13.5px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      margin: 4px 0 7px 0;
+      text-transform: uppercase;
+    }
+    .fopn-meta {
+      font-size: 11px;
+      font-weight: bold;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin-bottom: 6px;
+      border-bottom: 1.5px solid #000;
+      padding-bottom: 4px;
+    }
+    .fopn-meta-row {
+      display: flex;
+      justify-content: space-between;
+    }
+    .fopn-meta-field {
+      border-bottom: 1px solid #000;
+      padding-bottom: 1px;
+    }
+
+    /* TABLA FO-000 CON AJUSTE EXACTO ANTI-DESBORDE Y MÁQUINA EN CÓDIGO */
+    .fopn-table-wrap {
+      width: 100%;
+      margin-bottom: 6px;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+    .fopn-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      table-layout: fixed;
+      box-sizing: border-box;
+    }
+    .fopn-table th {
+      border: 1px solid #000;
+      background: #f1f5f9;
+      color: #000;
+      font-size: 9.5px;
+      font-weight: 900;
+      padding: 5px 2px;
+      text-align: center;
+      line-height: 1.15;
+      text-transform: uppercase;
+      word-break: break-word;
+    }
+    .fopn-table td {
+      border: 1px solid #000;
+      padding: 6px 2px;
+      text-align: center;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      line-height: 1.2;
+      font-weight: 700;
+      font-size: 11px;
+      color: #0f172a;
+    }
+    .fopn-summary-box {
+      background: #f8fafc;
+      border: 1px dashed #000;
+      padding: 7px 9px;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-sizing: border-box;
+    }
+
+    /* MODAL DE RESUMEN AMIGABLE TRAS EL ENVÍO */
+    .modal-success-card {
+      text-align: center;
+      padding: 10px 6px;
+    }
+    .success-icon-wrap {
+      font-size: 46px;
+      line-height: 1;
+      margin-bottom: 6px;
+      animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .success-title {
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--primary);
+      margin: 0 0 4px 0;
+      text-transform: uppercase;
+    }
+    .success-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin: 0 0 14px 0;
+      font-weight: 600;
+    }
+    .success-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .success-metric-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: var(--radius-sm);
+      padding: 8px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .success-metric-label {
+      font-size: 9px;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+    .success-metric-val {
+      font-size: 13.5px;
+      font-weight: 900;
+      color: var(--text);
+    }
+    .success-metric-extra {
+      color: #b45309 !important;
+      background: #fef3c7;
+      border-radius: 4px;
+      padding: 1px 4px;
+    }
+    .success-status-box {
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      margin-bottom: 14px;
+      font-size: 12px;
+      text-align: left;
+      line-height: 1.35;
+    }
+    .success-status-uptodate {
+      background: #f0fdf4;
+      border: 1.5px solid #86efac;
+      color: #14532d;
+    }
+    .success-status-pending {
+      background: #fff7ed;
+      border: 1.5px solid #fdba74;
+      color: #9a3412;
+    }
+    .success-warning-box {
+      background: #fef2f2;
+      border: 1.5px solid #ef4444;
+      border-left: 4px solid #dc2626;
+      border-radius: var(--radius-sm);
+      padding: 9px 11px;
+      margin-bottom: 12px;
+      font-size: 11.5px;
+      color: #991b1b;
+      text-align: left;
+      line-height: 1.35;
+    }
+    .success-notice-box {
+      background: #eff6ff;
+      border: 1.5px solid #93c5fd;
+      border-left: 4px solid #2563eb;
+      border-radius: var(--radius-sm);
+      padding: 9px 11px;
+      margin-bottom: 12px;
+      font-size: 11.5px;
+      color: #1e40af;
+      text-align: left;
+      line-height: 1.35;
+    }
+    .success-complete-box {
+      background: #f0fdf4;
+      border: 1.5px solid #86efac;
+      border-left: 4px solid #16a34a;
+      border-radius: var(--radius-sm);
+      padding: 9px 11px;
+      margin-bottom: 12px;
+      font-size: 11.5px;
+      color: #166534;
+      text-align: left;
+      line-height: 1.35;
+    }
+    .success-metric-sub {
+      font-size: 9px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      font-weight: 700;
+    }
+
+    /* LOGO EN MODAL DE RESUMEN */
+    .exito-logo {
+      display: block;
+      max-width: 190px;
+      width: 60%;
+      height: auto;
+      margin: 0 auto 10px auto;
+    }
+
+    /* MODAL DE AVISO / CONFIRMACIÓN */
+    .modal-aviso { z-index: 1500; }
+    .aviso-titulo {
+      font-size: 14.5px;
+      font-weight: 900;
+      color: #9a3412;
+      margin: 4px 4px 8px 4px;
+      text-transform: uppercase;
+    }
+    .aviso-mensaje {
+      font-size: 12.5px;
+      line-height: 1.45;
+      color: var(--text);
+      background: #fff7ed;
+      border: 1.5px solid #fdba74;
+      border-left: 4px solid #ea580c;
+      border-radius: var(--radius-sm);
+      padding: 9px 11px;
+      margin: 0 4px;
+    }
+    .aviso-mensaje ul { margin: 6px 0 0 0; padding-left: 18px; }
+    .aviso-mensaje li { margin-bottom: 3px; }
+
+    /* HORA INICIO QUE NO COINCIDE CON LA HORA FIN ANTERIOR */
+    td.celda-error { background: #fee2e2; color: #991b1b !important; font-weight: 800; }
+
+    /* TOAST */
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1e293b;
+      color: white;
+      padding: 9px 16px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: var(--shadow-lg);
+      z-index: 2000;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      max-width: 90%;
+      text-align: center;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.toast-success { background: #15803d; }
+    #toast.toast-danger { background: #b91c1c; }
+    #toast.toast-warning { background: #b45309; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.4); opacity: 0; }
+      70% { transform: scale(1.15); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CABECERA CON EL LOGOTIPO OFICIAL DE EMPRESA DEMO -->
+  <header class="header-card">
+    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='70' viewBox='0 0 300 70'%3E%3Crect width='300' height='70' rx='10' fill='%23004b87'/%3E%3Ctext x='150' y='45' font-family='Arial,sans-serif' font-size='26' font-weight='700' fill='%23ffffff' text-anchor='middle'%3ETU LOGO AQU%C3%8D%3C/text%3E%3C/svg%3E" alt="Empresa Demo" class="header-logo-img">
+    <div class="header-sub">REPORTE DE HORAS OPERARIOS</div>
+    <div class="header-tag">FO-000 • REV. 01 • CONTROL DE TIEMPOS</div>
+  </header>
+
+  <!-- PANEL SUPERIOR: TRABAJADOR, FECHA Y TRACKER SEMANAL -->
+  <section class="card tracker-card">
+    <div class="card-title">
+      <span>📋 Control de Operario y Fecha</span>
+      <span id="syncBadge" style="font-size: 10px; color: var(--success); font-weight: bold;">🟢 Conectado</span>
+    </div>
+
+    <!-- SELECTOR DE TRABAJADOR (1 SOLA CELDA ELEGANTE EN AZUL) -->
+    <div class="control-group">
+      <label for="trabajador">Trabajador:</label>
+      <select id="trabajador" onchange="onSeleccionarTrabajador(this.value)">
+        <option value="">Elige tu código o nombre...</option>
+      </select>
+    </div>
+
+    <!-- SELECTOR DE FECHA -->
+    <div class="control-group">
+      <label for="fechaReporte">Fecha de la Jornada Laborada:</label>
+      <div class="date-row">
+        <input type="date" id="fechaReporte" onchange="cambiarFechaManual()">
+        <button type="button" id="btnFechaAyer" class="btn-quick-date" onclick="establecerFechaAyer()">◀ Ayer</button>
+        <button type="button" id="btnFechaHoy" class="btn-quick-date" onclick="establecerFechaHoy()">📅 Hoy</button>
+      </div>
+    </div>
+
+    <!-- TRACKER SEMANAL -->
+    <div style="margin-top: 12px;">
+      <div class="tracker-header-info" id="trackerHeaderInfo">
+        <span>Último reporte registrado:</span>
+        <b id="txtUltimaFechaRegistrada" style="color: var(--primary);">Consultando...</b>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <label style="margin: 0;">📅 Mi Semana:</label>
+        <span id="semanaRangoTxt" style="font-size: 9.5px; color: var(--text-muted); font-weight: bold;"></span>
+      </div>
+      <div class="tracker-grid" id="semanaTracker"></div>
+      <div class="tracker-legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#16a34a;"></span> Registrado</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#dc2626;"></span> Faltante</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#f59e0b;"></span> Fin de Semana / Festivo</span>
+      </div>
+    </div>
+
+    <!-- CONTENEDOR DINÁMICO DE AVISO DE DEUDA -->
+    <div id="contenedorAvisoDeuda"></div>
+
+    <!-- AVISO DE JORNADA YA REGISTRADA Y BLOQUEADA -->
+    <div id="bannerDiaBloqueado" class="locked-day-banner">
+      <span>🔒</span>
+      <div>
+        <b>Jornada ya enviada a la base de datos</b>
+        Esta fecha ya fue reportada y está bloqueada para evitar duplicados. Si requieres modificaciones, comunícate con tu supervisor.
+      </div>
+    </div>
+  </section>
+
+  <!-- RESUMEN Y PLANILLA DEL DÍA -->
+  <section class="card">
+    <div class="summary-card">
+      <div class="summary-grid">
+        <div class="summary-val-box">
+          <span class="summary-label">Tiempo Total Dedicado</span>
+          <span class="summary-total" id="totalHoras">00:00:00</span>
+        </div>
+        <div id="badgeJornadaExtra" class="summary-badge-extra extra-pending">
+          Meta Ordinaria: 09:19:00
+        </div>
+      </div>
+    </div>
+
+    <div class="card-title">
+      <span>📝 Labores Registradas en Planilla</span>
+      <span id="contadorLabores" style="font-size: 11px; color: var(--text-muted);">0 labores</span>
+    </div>
+
+    <div class="table-responsive">
+      <table id="tablaRegistros">
+        <thead>
+          <tr>
+            <th style="width: 6%;">#</th>
+            <th style="width: 14%;">Inicio</th>
+            <th style="width: 14%;">Fin</th>
+            <th style="width: 13%;">Dedic.</th>
+            <th style="width: 15%;">Pedido</th>
+            <th style="width: 9%;">Cent.</th>
+            <th style="width: 9%;">Act.</th>
+            <th style="width: 9%;">Máq.</th>
+            <th style="width: 11%;">Acc.</th>
+          </tr>
+        </thead>
+        <tbody id="cuerpoTabla"></tbody>
+      </table>
+      <div id="mensaje-vacio" class="empty-state">
+        Aún no has añadido labores para esta fecha.<br>Usa el formulario de abajo para agregar la primera.
+      </div>
+    </div>
+
+    <button id="btnAbrirModal" class="btn btn-success" onclick="abrirModalConfirmacion()" style="display: none; margin-top: 6px;">
+      👁️ Ver Vista Previa y Enviar Planilla
+    </button>
+  </section>
+
+  <!-- FORMULARIO DE INGRESO / EDICIÓN DE LABOR -->
+  <section class="card form-card" id="seccionFormulario">
+    <div class="card-title">
+      <span id="formTitle">➕ Ingresar Nueva Labor</span>
+    </div>
+
+    <!-- Indicador de modo edición -->
+    <div id="modoEdicionBanner" class="edit-mode-indicator">
+      <span>✏️ Modificando labor seleccionada...</span>
+      <button type="button" onclick="cancelarEdicion()" style="border:none; background:#facc15; border-radius:4px; padding:2px 6px; font-size:10px; cursor:pointer; font-weight:bold;">Cancelar</button>
+    </div>
+
+    <!-- ACCESOS RÁPIDOS: DESAYUNO 15 MIN, ALMUERZO 40 MIN, PERMISO, CIERRE DE JORNADA -->
+    <div class="quick-fill-container" id="quickFillContainer">
+      <span class="quick-fill-label">⚡ Llenado Rápido (Auto-rellenable / Editable):</span>
+      <div class="quick-fill-grupos">
+        <div class="quick-fill-grupo">
+          <span class="quick-fill-subtitulo">🚪 Salidas</span>
+          <div class="quick-fill-grid">
+            <button type="button" class="btn-quick-fill btn-quick-permiso" onclick="autoRellenarPermiso()" title="Pedido 0, Centro 0, Act 23, Máq 98. Al añadirlo se cierra la jornada">
+              📋 Permiso
+            </button>
+            <button type="button" id="btnQuickCierre" class="btn-quick-fill btn-quick-cierre" onclick="toggleBotonCierreRapido()" title="Marcar fin de jornada (salida). Al añadirlo se cierra la jornada">
+              🏁 Fin jornada
+            </button>
+          </div>
+        </div>
+        <div class="quick-fill-grupo">
+          <span class="quick-fill-subtitulo">☕ Descansos</span>
+          <div class="quick-fill-grid">
+            <button type="button" class="btn-quick-fill btn-quick-desayuno" onclick="autoRellenarDesayuno()" title="Suma 15m a última hora, Pedido 0, Centro 0, Act 20, Máq 98">
+              ☕ Desayuno 15 min
+            </button>
+            <button type="button" class="btn-quick-fill btn-quick-almuerzo" onclick="autoRellenarAlmuerzo()" title="Suma 40m a última hora, Pedido 0, Centro 0, Act 20, Máq 98">
+              🍲 Almuerzo 40 min
+            </button>
+          </div>
+        </div>
+      </div>
+      <input type="checkbox" id="esCierreCheck" style="display:none;" onchange="toggleModoCierre(this.checked)">
+    </div>
+
+    <!-- PANELES DE HORA INICIO Y HORA FIN LIMPIOS Y COORDINADOS -->
+    <div class="form-grid-2">
+      <div>
+        <label for="horaInicio" id="labelHoraInicio">Hora Inicio</label>
+        <input type="text" id="horaInicio" inputmode="numeric" maxlength="4" placeholder="EJ: 730" oninput="validarHorasEnVivo()">
+        <span id="horaInicioLockHint" style="display:none; font-size:9.5px; color:#0284c7; font-weight:bold; margin-top:2px;">🔒 Hora fin previa</span>
+      </div>
+      <div>
+        <label for="horaFin" id="labelHoraFin">Hora Fin</label>
+        <input type="text" id="horaFin" inputmode="numeric" maxlength="4" placeholder="EJ: 1000" oninput="validarHorasEnVivo()">
+      </div>
+    </div>
+
+    <!-- Vista previa de duración en vivo -->
+    <div class="time-preview-box" id="timePreviewBox">
+      <span>⏱️ Horas Dedicada:</span>
+      <span class="time-preview-val" id="duracionEnVivo">00:00:00</span>
+    </div>
+
+    <div class="control-group">
+      <label for="numeroOrden">ORDEN</label>
+      <input type="text" id="numeroOrden" inputmode="numeric" maxlength="4" placeholder="EJ: 1234" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 4)">
+    </div>
+
+    <div class="control-group">
+      <label for="centroTrabajo">Centro de Trabajo:</label>
+      <select id="centroTrabajo"></select>
+    </div>
+
+    <div class="control-group">
+      <label for="actividad">Actividad / Labor:</label>
+      <select id="actividad"></select>
+    </div>
+
+    <!-- SELECTOR DE MÁQUINA (SIN TECLADO) -->
+    <div class="control-group">
+      <label for="maquina">Máquina:</label>
+      <select id="maquina"></select>
+    </div>
+
+    <div style="margin-top: 10px;">
+      <button type="button" id="btnAgregar" class="btn btn-primary" onclick="guardarFilaLocal()">
+        ➕ Añadir Labor
+      </button>
+      <button type="button" id="btnRevisarEnvio" class="btn btn-success" onclick="accionRevisarParaEnvio()" style="display: none;">
+        👁️ Revisar para Envío
+      </button>
+    </div>
+  </section>
+
+  <!-- MODAL DE VISTA PREVIA: FO-000 CON LETRA MÁS GRANDE Y MÁQUINA EN CÓDIGO -->
+  <div id="modalConfirmacion" class="modal-overlay">
+    <div class="modal-box">
+      <div class="fopn-sheet">
+        <div class="fopn-header">
+          <img alt="Empresa Demo" class="fopn-logo logo-empresa">
+          <div class="fopn-code">
+            FO-000<br>
+            REV. 01
+          </div>
+        </div>
+        <div class="fopn-title">REPORTE DE CONSUMO DE HORAS</div>
+        <div class="fopn-meta">
+          <div class="fopn-meta-row">
+            <span>FECHA: <span id="fopnFecha" class="fopn-meta-field">-</span></span>
+            <span>No: <span id="fopnNo" class="fopn-meta-field">1</span></span>
+          </div>
+          <div class="fopn-meta-row">
+            <span>TRABAJADOR: <span id="fopnTrabajador" class="fopn-meta-field">-</span></span>
+            <span>CÓDIGO: <span id="fopnCodigo" class="fopn-meta-field">-</span></span>
+          </div>
+          <div class="fopn-meta-row" style="margin-top: 2px;">
+            <span style="font-size: 10px; color: #475569;">DÍA: <span id="fopnDiaSemana" style="font-weight:bold; color:#000;">-</span></span>
+          </div>
+        </div>
+
+        <!-- TABLA FO-000: AJUSTE EXACTO HORA, PEDIDO Y MÁQUINA SIN DESBORDE -->
+        <div class="fopn-table-wrap">
+          <table class="fopn-table">
+            <thead>
+              <tr>
+                <th style="width: 6%;">#</th>
+                <th style="width: 19%;">HORA</th>
+                <th style="width: 18%;">PEDIDO</th>
+                <th style="width: 15%;">CENTRO</th>
+                <th style="width: 18%;">CÓD. ACT</th>
+                <th style="width: 24%;">MÁQUINA</th>
+              </tr>
+            </thead>
+            <tbody id="fopnCuerpoTabla"></tbody>
+          </table>
+        </div>
+
+        <div class="fopn-summary-box">
+          <div>
+            <b>TOTAL HORAS:</b> <span id="fopnTotalHoras" style="color:#004b87; font-weight:bold; font-size:13px;">00:00:00</span>
+          </div>
+          <div id="fopnDetalleOrdinariasExtra" style="font-size:10.5px; font-weight:bold;">
+            Ord: 00:00 | Ext: 00:00
+          </div>
+        </div>
+      </div>
+
+      <p style="text-align: center; font-size: 11px; color: var(--danger); font-weight: bold; margin: 0 0 10px 0;">
+        ¿Confirmas que la información es correcta y deseas enviar la planilla?
+      </p>
+
+      <div class="btn-dual">
+        <button type="button" class="btn btn-secondary" onclick="cerrarModal()">✏️ Modificar</button>
+        <button type="button" id="btnConfirmarEnvio" class="btn btn-success" onclick="confirmarEnvioPlanilla()">
+          ✅ Confirmar y Enviar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE ÉXITO AMIGABLE CON RESUMEN DE HORAS Y ESTADO DE PLANILLAS -->
+  <div id="modalExitoEnvio" class="modal-overlay">
+    <div class="modal-box" style="max-width: 440px;">
+      <div class="modal-success-card">
+        <img alt="Empresa Demo" class="exito-logo logo-empresa">
+        <h3 class="success-title" id="exitoTituloModal">¡Tu día fue registrado con éxito!</h3>
+        <p class="success-subtitle" id="exitoSubtitulo">-</p>
+
+        <!-- ALERTA DE CUMPLIMIENTO DE HORAS MÍNIMAS (O EXCEPCIÓN POR PERMISO) -->
+        <div id="exitoAlertaHorasMinimas"></div>
+
+        <!-- TARJETAS DE RESUMEN DE HORAS -->
+        <div class="success-metrics-grid">
+          <div class="success-metric-box">
+            <span class="success-metric-label">Tiempo Total</span>
+            <span class="success-metric-val" id="exitoTotalHoras">00:00:00</span>
+          </div>
+          <div class="success-metric-box">
+            <span class="success-metric-label">Ordinarias</span>
+            <span class="success-metric-val" style="color:#15803d;" id="exitoHorasOrd">00:00:00</span>
+            <span class="success-metric-sub" id="exitoSubHorasOrd">Meta: 09:19:00</span>
+          </div>
+          <div class="success-metric-box">
+            <span class="success-metric-label">Horas Extras</span>
+            <span class="success-metric-val" id="exitoHorasExt">00:00:00</span>
+            <span class="success-metric-sub" id="exitoSubHorasExt"></span>
+          </div>
+        </div>
+
+        <!-- ESTADO AMIGABLE DE PENDIENTES / AL DÍA -->
+        <div class="success-status-box" id="exitoStatusBox"></div>
+
+        <button type="button" class="btn btn-primary" onclick="cerrarModalExito()" style="font-size: 14.5px; font-weight: 800; letter-spacing: 0.5px;">
+          Listo
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE AVISO / CONFIRMACIÓN (ajustes de horario, validaciones) -->
+  <div id="modalAviso" class="modal-overlay modal-aviso">
+    <div class="modal-box" style="max-width: 420px;">
+      <h3 class="aviso-titulo" id="avisoTitulo">Aviso</h3>
+      <div class="aviso-mensaje" id="avisoMensaje"></div>
+      <div class="btn-dual">
+        <button type="button" class="btn btn-secondary" id="avisoBtnCancelar">Cancelar</button>
+        <button type="button" class="btn btn-success" id="avisoBtnAceptar">Aceptar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast"></div>
+
+  <script type="application/json" id="datosServidor"><?!= datosIniciales ?></script>
+  <script>
+    // META JORNADA ORDINARIA: 9 HORAS Y 19 MINUTOS (559 MINUTOS)
+    const MINUTOS_JORNADA_ORDINARIA = (9 * 60) + 19;
+    // LÍMITE MÁXIMO DE CONDICIÓN: 16 HORAS (960 MINUTOS)
+    const LIMITE_MAXIMO_MINUTOS = 16 * 60; // 960 min
+
+    // LISTAS MAESTRAS: llegan del servidor (hoja 'Consolidado Codigos') al cargar la página;
+    // si no hay conexión se usa la última copia guardada en el dispositivo.
+    let listaTrabajadoresOriginal = [];
+    let listaCentros = [];
+    let listaActividades = [];
+    let listaMaquinasOriginal = [];
+    let festivosColombia = new Set();
+
+    const NOMBRES_DIAS_COMPLETOS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const NOMBRES_MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+    // ESTADO DE LA APLICACIÓN
+    let historialLocal = [];
+    let fechasHistoricasBackend = [];
+    let ultimaFechaRegistradaTrabajador = null;
+    let primerDiaPendienteTrabajador = null;
+    let totalDiasPendientesTrabajador = 0;
+    let idEditandoActualmente = null;
+    let secuenciaSync = 0; // Descarta respuestas del servidor que lleguen fuera de orden
+
+    window.onload = function() {
+      // 1. Listas de 'Consolidado Codigos' inyectadas por el servidor; si no llegan, la última copia del dispositivo
+      let fecha = document.getElementById('fechaReporte');
+      let hoy = obtenerFechaHoyString();
+      fecha.max = hoy;
+      fecha.value = leerStorage('fechaReporteGuardada') || hoy;
+
+      aplicarListas(leerListasServidor() || leerListasCache(), leerStorage('trabajadorGuardado'));
+
+      // El logo se incrusta una sola vez (cabecera) y se reutiliza en la vista previa y en el resumen
+      let logo = document.querySelector('.header-logo-img');
+      document.querySelectorAll('.logo-empresa').forEach(img => { img.src = logo.src; });
+
+      cargarHistorialLocal();
+      actualizarInterfazCompleta();
+
+      // 2. Consultar a Google Apps Script el estado del trabajador (y refrescar listas)
+      sincronizarDatosConBackend();
+    };
+
+    /* ACCESO SEGURO A localStorage (puede fallar en modo privado o con almacenamiento lleno) */
+    function leerStorage(clave) {
+      try { return localStorage.getItem(clave); } catch (e) { return null; }
+    }
+    function escribirStorage(clave, valor) {
+      try { localStorage.setItem(clave, valor); } catch (e) { console.warn('No se pudo guardar ' + clave, e); }
+    }
+    function borrarStorage(clave) {
+      try { localStorage.removeItem(clave); } catch (e) {}
+    }
+
+    function escaparHtml(texto) {
+      return String(texto === null || texto === undefined ? '' : texto)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    function leerListasServidor() {
+      try {
+        let el = document.getElementById('datosServidor');
+        return el ? JSON.parse(el.textContent) : null;
+      } catch (e) {
+        return null; // Página abierta fuera de Apps Script (sin plantilla evaluada)
+      }
+    }
+
+    function leerListasCache() {
+      try {
+        return JSON.parse(leerStorage('listas_consolidado_cache') || 'null');
+      } catch (e) {
+        console.warn("No se pudo leer caché de Consolidado", e);
+        return null;
+      }
+    }
+
+    /**
+     * Aplica las listas de 'Consolidado Codigos' a los desplegables y las guarda en caché.
+     * @param {Object} l listas { trabajadores, centros, actividades, maquinas, festivos }
+     * @param {string} [trabajadorPreferido] trabajador a dejar seleccionado si existe en la lista
+     */
+    function aplicarListas(l, trabajadorPreferido) {
+      if (!l) return;
+      let tieneDatos = false;
+      if (l.trabajadores && l.trabajadores.length) { listaTrabajadoresOriginal = l.trabajadores; tieneDatos = true; }
+      if (l.centros && l.centros.length) listaCentros = l.centros;
+      if (l.actividades && l.actividades.length) listaActividades = l.actividades;
+      if (l.maquinas && l.maquinas.length) listaMaquinasOriginal = l.maquinas;
+      if (l.festivos && l.festivos.length) festivosColombia = new Set(l.festivos);
+
+      poblarSelect('trabajador', listaTrabajadoresOriginal, 'Elige tu código o nombre...', formatearEtiquetaTrabajador, trabajadorPreferido);
+      poblarSelect('centroTrabajo', listaCentros, 'Selecciona Centro...');
+      poblarSelect('actividad', listaActividades, 'Selecciona Actividad...');
+      poblarSelect('maquina', listaMaquinasOriginal, 'Selecciona Máquina...');
+      actualizarTarjetaOperario(document.getElementById('trabajador').value);
+
+      if (tieneDatos) escribirStorage('listas_consolidado_cache', JSON.stringify(l));
+    }
+
+    function formatearEtiquetaTrabajador(item) {
+      let partes = item.trim().split(' ');
+      let nom = partes.slice(1).join(' ');
+      return nom ? `${partes[0]} - ${nom}` : item;
+    }
+
+    function actualizarTarjetaOperario(trabajador) {
+      let sel = document.getElementById('trabajador');
+      if (sel) {
+        if (trabajador) {
+          sel.style.borderColor = '#004b87';
+          sel.style.backgroundColor = '#f0f7ff';
+        } else {
+          sel.style.borderColor = '';
+          sel.style.backgroundColor = '';
+        }
+      }
+    }
+
+    /**
+     * Llena un desplegable con createElement (evita HTML roto si un texto de la hoja trae comillas o "<").
+     * Conserva la opción elegida si sigue existiendo en la lista nueva.
+     */
+    function poblarSelect(id, array, placeholder, formatearEtiqueta, valorPreferido) {
+      let sel = document.getElementById(id);
+      let valorActual = valorPreferido || sel.value;
+      sel.innerHTML = '';
+      sel.appendChild(new Option(placeholder, ''));
+      array.forEach(item => {
+        sel.appendChild(new Option(formatearEtiqueta ? formatearEtiqueta(item) : item, item));
+      });
+      sel.value = (valorActual && array.includes(valorActual)) ? valorActual : '';
+    }
+
+    function aplicarEstadoTrabajador(estado) {
+      estado = estado || {};
+      fechasHistoricasBackend = estado.fechasReportadas || [];
+      ultimaFechaRegistradaTrabajador = estado.ultimaFechaRegistrada || null;
+      primerDiaPendienteTrabajador = estado.primerDiaPendiente || null;
+      totalDiasPendientesTrabajador = estado.totalDiasPendientes || 0;
+    }
+
+    function sincronizarDatosConBackend() {
+      let trabajador = document.getElementById('trabajador').value.trim();
+      let badge = document.getElementById('syncBadge');
+
+      if (typeof google === 'undefined' || !google.script || !google.script.run) {
+        actualizarInterfazCompleta();
+        return;
+      }
+
+      let miSecuencia = ++secuenciaSync;
+      badge.innerText = "⏳ Sincronizando...";
+      badge.style.color = "var(--accent)";
+
+      google.script.run
+        .withSuccessHandler(function(resp) {
+          if (miSecuencia !== secuenciaSync) return; // Llegó tarde: ya se pidió otro trabajador
+          badge.innerText = "🟢 Conectado";
+          badge.style.color = "var(--success)";
+
+          // Refrescar listas desde la hoja 'Consolidado Codigos' (trabajadores nuevos, máquinas, etc.)
+          if (resp && resp.listas) aplicarListas(resp.listas, trabajador);
+
+          // Si el trabajador fue retirado de la hoja, se limpia la selección
+          if (trabajador && document.getElementById('trabajador').value !== trabajador) {
+            borrarStorage('trabajadorGuardado');
+            aplicarEstadoTrabajador(null);
+          } else if (resp) {
+            aplicarEstadoTrabajador(resp.estadoTrabajador);
+          }
+
+          actualizarInterfazCompleta();
+        })
+        .withFailureHandler(function(err) {
+          if (miSecuencia !== secuenciaSync) return;
+          badge.innerText = "⚠️ Fuera de línea";
+          badge.style.color = "var(--warning)";
+          actualizarInterfazCompleta();
+        })
+        .obtenerDatosIniciales(trabajador);
+    }
+
+    function onSeleccionarTrabajador(trabajadorSeleccionado) {
+      // 1. Formatear y dejar casillas del formulario en blanco para su diligenciamiento
+      document.getElementById('horaInicio').value = '';
+      document.getElementById('horaInicio').readOnly = false;
+      document.getElementById('horaInicioLockHint').style.display = 'none';
+      cancelarEdicion(); // Limpia hora fin, orden, centro, actividad, máquina y modo cierre
+
+      // 2. Actualizar tarjeta visual profesional de operario
+      actualizarTarjetaOperario(trabajadorSeleccionado);
+
+      // 3. Limpiar el estado del trabajador anterior y sincronizar el nuevo con el backend
+      aplicarEstadoTrabajador(null);
+      if (trabajadorSeleccionado) {
+        escribirStorage('trabajadorGuardado', trabajadorSeleccionado);
+        sincronizarDatosConBackend();
+      } else {
+        borrarStorage('trabajadorGuardado');
+        secuenciaSync++; // Ignorar cualquier respuesta pendiente del trabajador anterior
+      }
+      actualizarInterfazCompleta();
+    }
+
+    /* FECHAS */
+    function establecerFechaHoy() {
+      document.getElementById('fechaReporte').value = obtenerFechaHoyString();
+      cambiarFechaManual();
+    }
+
+    function establecerFechaAyer() {
+      let d = new Date();
+      d.setDate(d.getDate() - 1);
+      document.getElementById('fechaReporte').value = formatearFechaA_ISO(d);
+      cambiarFechaManual();
+    }
+
+    function cambiarFechaManual() {
+      let fechaSel = document.getElementById('fechaReporte').value;
+      let hoy = obtenerFechaHoyString();
+      if (fechaSel > hoy) {
+        mostrarToast("⚠️ No puedes seleccionar una fecha futura.", "toast-warning");
+        fechaSel = hoy;
+      }
+      establecerFecha(fechaSel);
+    }
+
+    function seleccionarFechaDesdeTracker(fechaISO) {
+      if (fechaISO > obtenerFechaHoyString()) {
+        mostrarToast("⚠️ No puedes seleccionar una fecha futura.", "toast-warning");
+        return;
+      }
+      establecerFecha(fechaISO);
+    }
+
+    function establecerFecha(fechaISO) {
+      let input = document.getElementById('fechaReporte');
+      input.max = obtenerFechaHoyString(); // La app puede quedar abierta después de medianoche
+      input.value = fechaISO;
+      escribirStorage('fechaReporteGuardada', fechaISO);
+      // Una labor en edición pertenece a la fecha anterior: se cancela para no mezclar jornadas
+      if (idEditandoActualmente) cancelarEdicion();
+      actualizarInterfazCompleta();
+    }
+
+    function obtenerFechaHoyString() {
+      return formatearFechaA_ISO(new Date());
+    }
+
+    function formatearFechaA_ISO(d) {
+      let y = d.getFullYear();
+      let m = String(d.getMonth() + 1).padStart(2, '0');
+      let day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function obtenerNombreDiaSemana(fechaStr) {
+      if (!fechaStr) return '';
+      let partes = fechaStr.split('-');
+      let d = new Date(parseInt(partes[0], 10), parseInt(partes[1], 10) - 1, parseInt(partes[2], 10));
+      return NOMBRES_DIAS_COMPLETOS[d.getDay()];
+    }
+
+    function formatearFechaTextoLargo(fechaStr) {
+      if (!fechaStr) return '';
+      let partes = fechaStr.split('-');
+      let y = parseInt(partes[0], 10);
+      let m = parseInt(partes[1], 10) - 1;
+      let d = parseInt(partes[2], 10);
+      let dateObj = new Date(y, m, d);
+      return `${NOMBRES_DIAS_COMPLETOS[dateObj.getDay()]}, ${d} de ${NOMBRES_MESES[m]} de ${y}`;
+    }
+
+    function formatearFechaCorta(fechaStr) {
+      if (!fechaStr) return '';
+      let partes = fechaStr.split('-');
+      return `${partes[2]}/${partes[1]}/${partes[0]}`;
+    }
+
+    function actualizarInterfazCompleta() {
+      renderizarTrackerYAvisos();
+      renderizarTabla();
+      sincronizarCamposFormularioContinuo();
+      actualizarBloqueoPaneles();
+    }
+
+    /**
+     * Habilita o bloquea los paneles según el estado de la jornada:
+     * - Sin trabajador (p. ej. recién enviada la planilla): todo en gris; solo se puede elegir trabajador.
+     * - Día ya enviado a Sheets: formulario bloqueado.
+     * - Jornada cerrada (Permiso o Fin jornada en la planilla): nada se mueve (trabajador, fecha, semana,
+     *   formulario); solo se puede editar/eliminar una labor desde la tabla y revisar para envío.
+     */
+    function actualizarBloqueoPaneles() {
+      let fechaSel = document.getElementById('fechaReporte').value;
+      let trabajador = document.getElementById('trabajador').value.trim();
+      let editando = !!idEditandoActualmente;
+      let sinTrabajador = !trabajador;
+      let yaEnviado = !sinTrabajador && fechasHistoricasBackend.includes(fechaSel);
+      let cerrada = !sinTrabajador && hayJornadaCerrada();
+      let formBloqueado = sinTrabajador || yaEnviado || (cerrada && !editando);
+
+      document.body.classList.toggle('modo-inactivo', sinTrabajador);
+      document.getElementById('bannerDiaBloqueado').style.display = yaEnviado ? 'flex' : 'none';
+
+      // Panel superior
+      document.getElementById('trabajador').disabled = cerrada;
+      ['fechaReporte', 'btnFechaAyer', 'btnFechaHoy'].forEach(id => {
+        document.getElementById(id).disabled = cerrada || sinTrabajador;
+      });
+      document.getElementById('semanaTracker').classList.toggle('tracker-bloqueado', cerrada);
+
+      // Formulario (el botón "Revisar para Envío" queda siempre activo)
+      let formCard = document.getElementById('seccionFormulario');
+      formCard.classList.toggle('panel-bloqueado', formBloqueado);
+      formCard.style.pointerEvents = yaEnviado ? 'none' : 'auto';
+      ['horaInicio', 'numeroOrden', 'centroTrabajo', 'actividad', 'maquina', 'btnAgregar'].forEach(id => {
+        document.getElementById(id).disabled = formBloqueado;
+      });
+      document.getElementById('horaFin').disabled = formBloqueado || document.getElementById('esCierreCheck').checked;
+      formCard.querySelectorAll('.btn-quick-fill').forEach(b => { b.disabled = formBloqueado; });
+    }
+
+    function esLaborPermiso(r) {
+      let act = String(r.actividad || '');
+      return extraerCodigo(act) === '23' || /PERMISO/i.test(act);
+    }
+
+    // La jornada queda cerrada cuando la planilla del día tiene un Fin jornada o un Permiso
+    function hayJornadaCerrada() {
+      let fechaSel = document.getElementById('fechaReporte').value;
+      let trabajador = document.getElementById('trabajador').value.trim();
+      return historialLocal.some(r => r.fechaReporte === fechaSel && r.trabajador === trabajador && (r.esCierre || esLaborPermiso(r)));
+    }
+
+    /* CADENA DE HORARIO: cada labor debe iniciar exactamente cuando termina la anterior */
+    function registrosDelDia() {
+      let fechaSel = document.getElementById('fechaReporte').value;
+      let trabajador = document.getElementById('trabajador').value.trim();
+      return historialLocal.filter(r => r.fechaReporte === fechaSel && r.trabajador === trabajador);
+    }
+
+    function duracionLabor(r) {
+      if (r.esCierre || !r.horaFin) return 0;
+      let minI = convertirHoraAMinutos(r.horaInicio);
+      let minF = convertirHoraAMinutos(r.horaFin);
+      return (minI === null || minF === null) ? 0 : calcularDiferenciaMinutos(minI, minF);
+    }
+
+    function recalcularLabor(r) {
+      if (r.esCierre || !r.horaFin) return;
+      r.horasDedicadas = minutosAHHMMSS(duracionLabor(r));
+      r.esNocturno = convertirHoraAMinutos(r.horaFin) < convertirHoraAMinutos(r.horaInicio);
+    }
+
+    // Devuelve las labores cuya hora inicio no coincide con la hora fin de la labor anterior
+    function detectarCortesHorario(registros) {
+      let cortes = [];
+      for (let i = 1; i < registros.length; i++) {
+        let anterior = registros[i - 1];
+        if (anterior.esCierre || !anterior.horaFin) continue;
+        if (convertirHoraAMinutos(registros[i].horaInicio) !== convertirHoraAMinutos(anterior.horaFin)) {
+          cortes.push({ anterior: anterior, siguiente: registros[i] });
+        }
+      }
+      return cortes;
+    }
+
+    /**
+     * Corrige la cadena: la hora inicio de cada labor pasa a ser la hora fin de la anterior.
+     * Primero simula; si alguna labor quedaría inválida no cambia nada y avisa cuál corregir a mano.
+     */
+    function ajustarCadenaHorario(registros) {
+      let simulados = registros.map(r => Object.assign({}, r));
+      for (let i = 1; i < simulados.length; i++) {
+        let anterior = simulados[i - 1];
+        if (anterior.esCierre || !anterior.horaFin) continue;
+        simulados[i].horaInicio = anterior.horaFin;
+        let s = simulados[i];
+        if (!s.esCierre && s.horaFin) {
+          let d = duracionLabor(s);
+          if (d === 0 || d > LIMITE_MAXIMO_MINUTOS) {
+            mostrarAviso('No se pudo ajustar', `La labor <b>#${escaparHtml(s.item)}</b> quedaría de <b>${normalizarHoraTexto(s.horaInicio)}</b> a <b>${normalizarHoraTexto(s.horaFin)}</b>, lo cual no es válido.<br><br>Corrígela con ✏️ (o elimínala) y vuelve a intentar.`);
+            return false;
+          }
+        }
+      }
+      let total = simulados.reduce((acc, r) => acc + duracionLabor(r), 0);
+      if (total > LIMITE_MAXIMO_MINUTOS) {
+        mostrarAviso('No se pudo ajustar', `Con el ajuste la jornada sumaría <b>${Math.floor(total / 60)}h ${total % 60}m</b>, más del tope de 16 horas. Corrige las labores manualmente.`);
+        return false;
+      }
+      registros.forEach((r, i) => {
+        r.horaInicio = simulados[i].horaInicio;
+        recalcularLabor(r);
+      });
+      guardarHistorialLocal();
+      actualizarInterfazCompleta();
+      mostrarToast("✅ Horas ajustadas: todas las labores quedaron en cadena.", "toast-success");
+      return true;
+    }
+
+    /**
+     * Modal propio de aviso/confirmación. Sin onAceptar se muestra solo como aviso (un botón).
+     */
+    function mostrarAviso(titulo, mensajeHtml, onAceptar, textoAceptar) {
+      let modal = document.getElementById('modalAviso');
+      let btnAceptar = document.getElementById('avisoBtnAceptar');
+      let btnCancelar = document.getElementById('avisoBtnCancelar');
+      document.getElementById('avisoTitulo').innerText = '⚠️ ' + titulo;
+      document.getElementById('avisoMensaje').innerHTML = mensajeHtml;
+      btnAceptar.innerText = textoAceptar || (onAceptar ? 'Aceptar' : 'Entendido');
+      btnCancelar.style.display = onAceptar ? 'flex' : 'none';
+      btnAceptar.parentElement.style.gridTemplateColumns = onAceptar ? '1fr 1fr' : '1fr';
+      let cerrar = () => { modal.style.display = 'none'; };
+      btnCancelar.onclick = cerrar;
+      btnAceptar.onclick = () => { cerrar(); if (onAceptar) onAceptar(); };
+      modal.style.display = 'flex';
+    }
+
+    /* TRACKER SEMANAL Y AVISOS DE DEUDA CON ALERTA ROJA (> 10 DÍAS) */
+    function renderizarTrackerYAvisos() {
+      const container = document.getElementById('semanaTracker');
+      container.innerHTML = '';
+
+      let fechaStr = document.getElementById('fechaReporte').value || obtenerFechaHoyString();
+      let partes = fechaStr.split('-');
+      let fechaSel = new Date(parseInt(partes[0], 10), parseInt(partes[1], 10) - 1, parseInt(partes[2], 10));
+
+      let diaSemana = fechaSel.getDay() === 0 ? 7 : fechaSel.getDay();
+      let lunes = new Date(fechaSel);
+      lunes.setDate(fechaSel.getDate() - (diaSemana - 1));
+
+      let domingo = new Date(lunes);
+      domingo.setDate(lunes.getDate() + 6);
+
+      let lunesIso = formatearFechaA_ISO(lunes);
+      let domingoIso = formatearFechaA_ISO(domingo);
+
+      document.getElementById('semanaRangoTxt').innerText = 
+        `${lunes.getDate()}/${lunes.getMonth()+1} - ${domingo.getDate()}/${domingo.getMonth()+1}`;
+
+      const nombresDias = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+      let hoyStr = obtenerFechaHoyString();
+      let trabajadorActual = document.getElementById('trabajador').value.trim();
+
+      // 1. Mostrar última fecha registrada en el encabezado
+      let txtUltima = document.getElementById('txtUltimaFechaRegistrada');
+      if (!trabajadorActual) {
+        txtUltima.innerText = 'Selecciona tu nombre';
+        txtUltima.style.color = 'var(--text-muted)';
+      } else if (ultimaFechaRegistradaTrabajador) {
+        txtUltima.innerText = formatearFechaTextoLargo(ultimaFechaRegistradaTrabajador);
+        txtUltima.style.color = 'var(--primary)';
+      } else {
+        txtUltima.innerText = 'Sin registros previos';
+        txtUltima.style.color = 'var(--text-muted)';
+      }
+
+      // 2. Renderizar los 7 días de la semana
+      for (let i = 0; i < 7; i++) {
+        let diaIter = new Date(lunes);
+        diaIter.setDate(lunes.getDate() + i);
+        let isoIter = formatearFechaA_ISO(diaIter);
+
+        let esFinSemana = (diaIter.getDay() === 0 || diaIter.getDay() === 6);
+        let esFestivo = festivosColombia.has(isoIter);
+        let esAmarillo = esFinSemana || esFestivo;
+        let esFuturo = isoIter > hoyStr;
+        let esDiaActivo = (isoIter === fechaStr);
+
+        let tieneDatosLocales = historialLocal.some(r => r.fechaReporte === isoIter && (!trabajadorActual || r.trabajador === trabajadorActual));
+        let tieneDatosBackend = fechasHistoricasBackend.includes(isoIter);
+        let tieneDatos = tieneDatosLocales || tieneDatosBackend;
+
+        let claseEstado = '';
+        if (esFuturo) {
+          claseEstado = 'status-future';
+        } else if (tieneDatos) {
+          claseEstado = esAmarillo ? 'status-weekend-reported' : 'status-reported';
+        } else {
+          claseEstado = esAmarillo ? 'status-weekend' : 'status-missing';
+        }
+
+        if (esDiaActivo) claseEstado += ' day-selected';
+
+        let pill = document.createElement('div');
+        pill.className = `day-pill ${claseEstado}`;
+        pill.innerHTML = `
+          <span class="day-name">${nombresDias[i]}</span>
+          <span class="day-num">${diaIter.getDate()}</span>
+          <span class="day-indicator"></span>
+        `;
+
+        if (!esFuturo) {
+          pill.onclick = () => seleccionarFechaDesdeTracker(isoIter);
+        }
+
+        container.appendChild(pill);
+      }
+
+      // 3. Renderizar Aviso de Deuda Compacto (leyenda de cuántos días atrás debe)
+      let contenedorAvisos = document.getElementById('contenedorAvisoDeuda');
+      contenedorAvisos.innerHTML = '';
+
+      if (!trabajadorActual) return;
+
+      let huecos20 = obtenerHuecosHistoricos(trabajadorActual);
+
+      if (!ultimaFechaRegistradaTrabajador && huecos20.length === 0) {
+        contenedorAvisos.innerHTML = `
+          <div class="debt-compact-legend" style="color:#64748b; background:#f8fafc; border-color:#cbd5e1;">
+            ℹ️ Sin planillas previas registradas en la base de datos.
+          </div>
+        `;
+        return;
+      }
+
+      if (huecos20.length > 0) {
+        let primerHueco = huecos20[0];
+        let hoy = new Date();
+        let dPrimer = new Date(primerHueco + 'T00:00:00');
+        let diffMs = hoy - dPrimer;
+        let diasAtras = Math.max(1, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+
+        let colorBorde = huecos20.length > 5 ? '#dc2626' : '#ea580c';
+        let colorFondo = huecos20.length > 5 ? '#fef2f2' : '#fff7ed';
+        let colorTexto = huecos20.length > 5 ? '#991b1b' : '#9a3412';
+
+        contenedorAvisos.innerHTML = `
+          <div class="debt-compact-legend" style="border-left: 3px solid ${colorBorde}; background: ${colorFondo}; color: ${colorTexto};">
+            ⚠️ <b>Atención:</b> Debes <b>${huecos20.length} día(s)</b> de planilla (desde hace <b>${diasAtras} días</b>).
+          </div>
+        `;
+      } else {
+        contenedorAvisos.innerHTML = `
+          <div class="debt-compact-legend" style="border-left: 3px solid #16a34a; background: #f0fdf4; color: #166534;">
+            ✅ <b>Estás al día:</b> Sin planillas pendientes de reporte.
+          </div>
+        `;
+      }
+    }
+
+    // Misma regla que el servidor: 20 días atrás, lunes a viernes, sin festivos y sin contar hoy
+    function obtenerHuecosHistoricos(trabajador) {
+      let huecos = [];
+      let hoy = new Date();
+      for (let i = 20; i >= 1; i--) {
+        let d = new Date(hoy);
+        d.setDate(hoy.getDate() - i);
+        let iso = formatearFechaA_ISO(d);
+        let diaSemana = d.getDay(); // 0 = Domingo, 6 = Sábado
+        if (diaSemana !== 0 && diaSemana !== 6 && !festivosColombia.has(iso)) {
+          let tieneBackend = fechasHistoricasBackend.includes(iso);
+          let tieneLocal = historialLocal.some(r => r.fechaReporte === iso && r.trabajador === trabajador);
+          if (!tieneBackend && !tieneLocal) {
+            huecos.push(iso);
+          }
+        }
+      }
+      return huecos;
+    }
+
+    /* TIEMPO, NORMALIZACIÓN Y CONDICIÓN ESTRICTA DE 16 HORAS */
+    function convertirHoraAMinutos(horaInput) {
+      if (!horaInput && horaInput !== 0) return null;
+      let str = horaInput.toString().replace(/[^0-9]/g, '');
+      if (str.length < 3 || str.length > 4) return null;
+      let h, m;
+      if (str.length === 3) {
+        h = parseInt(str.substring(0, 1), 10);
+        m = parseInt(str.substring(1, 3), 10);
+      } else {
+        h = parseInt(str.substring(0, 2), 10);
+        m = parseInt(str.substring(2, 4), 10);
+      }
+      if (isNaN(h) || isNaN(m) || h > 23 || m > 59) return null;
+      return (h * 60) + m;
+    }
+
+    function minutosAHHMMSS(totalMinutos) {
+      let h = Math.floor(totalMinutos / 60);
+      let m = totalMinutos % 60;
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00`;
+    }
+
+    function normalizarHoraTexto(horaInput) {
+      if (!horaInput && horaInput !== 0) return '';
+      let str = horaInput.toString().replace(/[^0-9]/g, '');
+      if (str.length < 3 || str.length > 4) return str;
+      let h, m;
+      if (str.length === 3) {
+        h = str.substring(0, 1).padStart(2, '0');
+        m = str.substring(1, 3);
+      } else {
+        h = str.substring(0, 2);
+        m = str.substring(2, 4);
+      }
+      return `${h}:${m}`;
+    }
+
+    function calcularDiferenciaMinutos(inicioMin, finMin) {
+      if (inicioMin === null || finMin === null) return null;
+      if (finMin >= inicioMin) {
+        return finMin - inicioMin;
+      } else {
+        return (1440 - inicioMin) + finMin;
+      }
+    }
+
+    function obtenerUltimaLaborDelDia() {
+      let fechaSel = document.getElementById('fechaReporte').value;
+      let trabajador = document.getElementById('trabajador').value.trim();
+      let registros = historialLocal.filter(r => r.fechaReporte === fechaSel && (!trabajador || r.trabajador === trabajador));
+      if (registros.length === 0) return null;
+
+      if (idEditandoActualmente) {
+        let indexEdit = registros.findIndex(r => r.idRegistro === idEditandoActualmente);
+        if (indexEdit > 0) return registros[indexEdit - 1];
+        return null;
+      }
+      return registros[registros.length - 1];
+    }
+
+    function calcularMinutosTotalesActualesDelDia(excluirId = null) {
+      let fechaSel = document.getElementById('fechaReporte').value;
+      let trabajador = document.getElementById('trabajador').value.trim();
+      let registros = historialLocal.filter(r => r.fechaReporte === fechaSel && (!trabajador || r.trabajador === trabajador));
+      let total = 0;
+      registros.forEach(r => {
+        if (r.idRegistro !== excluirId && !r.esCierre && r.horaFin) {
+          let minI = convertirHoraAMinutos(r.horaInicio);
+          let minF = convertirHoraAMinutos(r.horaFin);
+          if (minI !== null && minF !== null) {
+            total += calcularDiferenciaMinutos(minI, minF);
+          }
+        }
+      });
+      return total;
+    }
+
+    function hayCierreRegistrado() {
+      let fechaSel = document.getElementById('fechaReporte').value;
+      let trabajador = document.getElementById('trabajador').value.trim();
+      return historialLocal.some(r => r.fechaReporte === fechaSel && (!trabajador || r.trabajador === trabajador) && r.esCierre);
+    }
+
+    function sincronizarCamposFormularioContinuo() {
+      if (idEditandoActualmente) return;
+
+      let ultimaLabor = obtenerUltimaLaborDelDia();
+      let inputInicio = document.getElementById('horaInicio');
+      let lockHint = document.getElementById('horaInicioLockHint');
+      let quickContainer = document.getElementById('quickFillContainer');
+      let btnAgregar = document.getElementById('btnAgregar');
+      let btnRevisar = document.getElementById('btnRevisarEnvio');
+
+      if (document.getElementById('trabajador').value.trim() && hayJornadaCerrada()) {
+        if (quickContainer) quickContainer.style.display = 'none';
+        if (btnAgregar) {
+          btnAgregar.disabled = true;
+          btnAgregar.style.display = 'none';
+        }
+        if (btnRevisar) btnRevisar.style.display = 'flex';
+        document.getElementById('formTitle').innerText = hayCierreRegistrado()
+          ? '🏁 Jornada Cerrada (Fin de Jornada Registrado) · Solo edición'
+          : '📋 Jornada Cerrada (Permiso Registrado) · Solo edición';
+        return;
+      } else {
+        if (quickContainer) quickContainer.style.display = 'block';
+        if (!document.getElementById('esCierreCheck').checked) {
+          if (btnAgregar) {
+            btnAgregar.style.display = 'flex';
+            btnAgregar.disabled = false;
+          }
+          if (btnRevisar) btnRevisar.style.display = 'none';
+          document.getElementById('formTitle').innerText = '➕ Ingresar Nueva Labor';
+        }
+      }
+
+      if (ultimaLabor && ultimaLabor.horaFin && !ultimaLabor.esCierre) {
+        // Labores posteriores: heredada de la hora fin del último registro
+        inputInicio.value = ultimaLabor.horaFin;
+        inputInicio.readOnly = true;
+        if (lockHint) {
+          lockHint.style.display = 'block';
+          lockHint.innerText = '🔒 Heredada de fin previa (' + normalizarHoraTexto(ultimaLabor.horaFin) + ')';
+        }
+      } else {
+        // Primer registro del día: ingresada manualmente por el operario
+        if (!idEditandoActualmente) {
+          inputInicio.readOnly = false;
+          if (lockHint) lockHint.style.display = 'none';
+        }
+      }
+    }
+
+    /* ACCESOS RÁPIDOS: DESAYUNO 15 MIN, ALMUERZO 40 MIN, PERMISO */
+    function obtenerHoraInicioParaAutoRellenar() {
+      let valInicio = document.getElementById('horaInicio').value.trim();
+      if (valInicio) return valInicio;
+      let ultimaLabor = obtenerUltimaLaborDelDia();
+      if (ultimaLabor && ultimaLabor.horaFin) return ultimaLabor.horaFin;
+      return '';
+    }
+
+    function minutosAMilitarStr(minutos) {
+      let h = Math.floor(minutos / 60) % 24;
+      let m = minutos % 60;
+      return `${String(h).padStart(2, '0')}${String(m).padStart(2, '0')}`;
+    }
+
+    // Selecciona la opción cuyo código inicial coincide (ej: '98' → "98 - OTROS"). Si no existe, deja el select vacío
+    // para que el operario elija (antes una coincidencia parcial podía elegir "10 - ..." al buscar "0").
+    function seleccionarOpcionPorCodigo(selectId, codigo) {
+      let sel = document.getElementById(selectId);
+      if (!sel) return;
+      let codStr = String(codigo).trim();
+      let idx = Array.from(sel.options).findIndex(o => o.value && extraerCodigo(o.value) === codStr);
+      sel.selectedIndex = idx > -1 ? idx : 0;
+    }
+
+    // Códigos de pausa: Pedido 0, Centro 0, Actividad (20 descanso / 23 permiso), Máquina "98 - OTROS"
+    const MAQUINA_PAUSA = '98 - OTROS';
+    function rellenarCodigosPausa(codActividad) {
+      document.getElementById('numeroOrden').value = '0';
+      seleccionarOpcionPorCodigo('centroTrabajo', '0');
+      seleccionarOpcionPorCodigo('actividad', codActividad);
+      let selMaq = document.getElementById('maquina');
+      selMaq.value = MAQUINA_PAUSA;
+      if (selMaq.value !== MAQUINA_PAUSA) seleccionarOpcionPorCodigo('maquina', '98'); // Respaldo si falta en la lista
+    }
+
+    /**
+     * Accesos rápidos. minutos = duración a sumar a la hora inicio (null = el operario digita la hora fin).
+     */
+    function autoRellenarPausa(minutos, codActividad, mensaje) {
+      if (hayJornadaCerrada()) {
+        mostrarToast("⚠️ La jornada ya está cerrada.", "toast-warning");
+        return;
+      }
+      document.getElementById('esCierreCheck').checked = false;
+      toggleModoCierre(false);
+
+      let hInicio = obtenerHoraInicioParaAutoRellenar();
+      if (hInicio) {
+        document.getElementById('horaInicio').value = hInicio;
+        let minI = convertirHoraAMinutos(hInicio);
+        if (minutos !== null && minI !== null) {
+          document.getElementById('horaFin').value = minutosAMilitarStr((minI + minutos) % 1440);
+        }
+      }
+
+      rellenarCodigosPausa(codActividad);
+      validarHorasEnVivo();
+      mostrarToast(mensaje, "toast-success");
+      if (!hInicio) document.getElementById('horaInicio').focus();
+      else if (minutos === null) document.getElementById('horaFin').focus();
+    }
+
+    function autoRellenarDesayuno() {
+      autoRellenarPausa(15, '20', "☕ Desayuno (+15 min) cargado en el formulario (Editable).");
+    }
+
+    function autoRellenarAlmuerzo() {
+      autoRellenarPausa(40, '20', "🍲 Almuerzo (+40 min) cargado en el formulario (Editable).");
+    }
+
+    function autoRellenarPermiso() {
+      autoRellenarPausa(null, '23', "📋 Permiso cargado (Editable). Digita la hora fin y añade la labor.");
+    }
+
+    function toggleBotonCierreRapido() {
+      let chk = document.getElementById('esCierreCheck');
+      chk.checked = !chk.checked;
+      toggleModoCierre(chk.checked);
+    }
+
+    function toggleModoCierre(activado) {
+      let inputFin = document.getElementById('horaFin');
+      let previewEl = document.getElementById('duracionEnVivo');
+      let btnAgregar = document.getElementById('btnAgregar');
+      let btnRevisar = document.getElementById('btnRevisarEnvio');
+      let btnCierre = document.getElementById('btnQuickCierre');
+
+      if (btnCierre) {
+        if (activado) {
+          btnCierre.classList.add('active');
+          btnCierre.innerHTML = '🏁 Fin jornada ✓';
+        } else {
+          btnCierre.classList.remove('active');
+          btnCierre.innerHTML = '🏁 Fin jornada';
+        }
+      }
+
+      if (activado) {
+        inputFin.value = '';
+        inputFin.disabled = true;
+        inputFin.placeholder = '(Sin fin - Cierre)';
+        rellenarCodigosPausa('20');
+        previewEl.innerHTML = '<b style="color:#9a3412;">🏁 Fin de Jornada (Salida)</b>';
+        // Inhabilitar botón agregar y mostrar uno que diga "Revisar para envío"
+        btnAgregar.style.display = 'none';
+        btnRevisar.style.display = 'flex';
+        btnRevisar.className = 'btn btn-success';
+        btnRevisar.innerHTML = '👁️ Revisar para Envío';
+      } else {
+        inputFin.disabled = false;
+        inputFin.placeholder = 'EJ: 1000';
+        document.getElementById('numeroOrden').value = '';
+        document.getElementById('centroTrabajo').selectedIndex = 0;
+        document.getElementById('actividad').selectedIndex = 0;
+        document.getElementById('maquina').selectedIndex = 0;
+        validarHorasEnVivo();
+        btnAgregar.style.display = 'flex';
+        btnAgregar.disabled = false;
+        btnAgregar.innerText = '➕ Añadir Labor';
+        btnAgregar.className = 'btn btn-primary';
+        btnRevisar.style.display = 'none';
+      }
+    }
+
+    function accionRevisarParaEnvio() {
+      // Guardar primero el cierre nuevo (o la labor en edición); si la validación falla no se abre la vista previa
+      let hayPendiente = idEditandoActualmente || (document.getElementById('esCierreCheck').checked && !hayCierreRegistrado());
+      if (hayPendiente && !guardarFilaLocal()) return;
+      abrirModalConfirmacion();
+    }
+
+    function validarHorasEnVivo() {
+      if (document.getElementById('esCierreCheck').checked) return;
+
+      let inicioVal = document.getElementById('horaInicio').value.replace(/[^0-9]/g, '');
+      let finVal = document.getElementById('horaFin').value.replace(/[^0-9]/g, '');
+      document.getElementById('horaInicio').value = inicioVal;
+      document.getElementById('horaFin').value = finVal;
+
+      let minI = convertirHoraAMinutos(inicioVal);
+      let minF = convertirHoraAMinutos(finVal);
+      let previewEl = document.getElementById('duracionEnVivo');
+
+      let ultimaLabor = obtenerUltimaLaborDelDia();
+      if (ultimaLabor && ultimaLabor.horaFin && minI !== null) {
+        let minUltimoFin = convertirHoraAMinutos(ultimaLabor.horaFin);
+        if (minUltimoFin !== null && minI !== minUltimoFin) {
+          previewEl.innerHTML = `<span class="time-preview-error">⚠️ Hora Inicio (${normalizarHoraTexto(inicioVal)}) debe coincidir con fin previo (${normalizarHoraTexto(ultimaLabor.horaFin)})</span>`;
+          return;
+        }
+      }
+
+      if (minI !== null && minF !== null) {
+        if (minI === minF) {
+          previewEl.innerHTML = `<span class="time-preview-error">⚠️ Hora Fin igual a Hora Inicio</span>`;
+          return;
+        }
+        let diff = calcularDiferenciaMinutos(minI, minF);
+        
+        // CONDICIÓN ESTRICTA: Límite de 16 horas
+        if (diff > LIMITE_MAXIMO_MINUTOS) {
+          previewEl.innerHTML = `<span class="time-preview-error">⚠️ Supera tope de 16 horas (${Math.floor(diff/60)}h ${diff%60}m)</span>`;
+          return;
+        }
+
+        let hhmmss = minutosAHHMMSS(diff);
+        let esNocturno = (finVal.length >= 3 && inicioVal.length >= 3 && minF < minI);
+        previewEl.innerHTML = `${hhmmss} ${esNocturno ? '<span style="color:#6366f1; font-weight:bold; font-size:10px;">🌙 Nocturno</span>' : ''}`;
+      } else {
+        previewEl.innerText = "00:00:00";
+      }
+    }
+
+    /* GUARDADO LOCAL CON CONDICIÓN DE 16 HORAS */
+    function cargarHistorialLocal() {
+      try {
+        let parsed = JSON.parse(leerStorage('historial_v3') || '[]');
+        historialLocal = Array.isArray(parsed) ? parsed : [];
+      } catch(e) {
+        historialLocal = [];
+      }
+    }
+
+    function guardarHistorialLocal() {
+      try {
+        localStorage.setItem('historial_v3', JSON.stringify(historialLocal));
+      } catch (e) {
+        mostrarToast("⚠️ No se pudo guardar la planilla en este dispositivo. Envíala antes de cerrar la app.", "toast-danger");
+      }
+    }
+
+    // confirmadoAjuste: true cuando el operario ya aceptó ajustar la hora inicio de la labor siguiente
+    function guardarFilaLocal(confirmadoAjuste) {
+      let trabajador = document.getElementById('trabajador').value.trim();
+      let fechaReporte = document.getElementById('fechaReporte').value;
+      let horaInicio = document.getElementById('horaInicio').value;
+      let horaFin = document.getElementById('horaFin').value;
+      let numeroOrden = document.getElementById('numeroOrden').value || "0";
+      let centroTrabajo = document.getElementById('centroTrabajo').value;
+      let actividad = document.getElementById('actividad').value;
+      let maquina = document.getElementById('maquina').value.trim();
+      let esCierre = document.getElementById('esCierreCheck').checked;
+
+      if (!trabajador) {
+        mostrarToast("⚠️ Selecciona tu nombre en Trabajador.", "toast-warning");
+        document.getElementById('trabajador').focus();
+        return false;
+      }
+      if (!fechaReporte) {
+        mostrarToast("⚠️ Selecciona una fecha válida.", "toast-warning");
+        return false;
+      }
+
+      if (fechasHistoricasBackend.includes(fechaReporte)) {
+        mostrarToast("🔒 Esta jornada ya fue enviada a Google Sheets y no puede ser modificada.", "toast-danger");
+        return false;
+      }
+
+      if (!idEditandoActualmente && hayJornadaCerrada()) {
+        mostrarToast("🔒 La jornada ya está cerrada (Permiso o Fin jornada). Solo puedes editar labores existentes.", "toast-warning");
+        return false;
+      }
+
+      let minI = convertirHoraAMinutos(horaInicio);
+      if (minI === null) {
+        mostrarToast("⚠️ Ingresa una Hora Inicio válida (ej: 730).", "toast-warning");
+        return false;
+      }
+
+      let ultimaLabor = obtenerUltimaLaborDelDia();
+      if (ultimaLabor && ultimaLabor.horaFin) {
+        let minUltimoFin = convertirHoraAMinutos(ultimaLabor.horaFin);
+        if (minUltimoFin !== null && minI !== minUltimoFin) {
+          mostrarToast(`⚠️ Error: La Hora Inicio (${normalizarHoraTexto(horaInicio)}) debe coincidir con la Hora Fin previa (${normalizarHoraTexto(ultimaLabor.horaFin)}).`, "toast-danger");
+          return false;
+        }
+      }
+
+      let minF = null;
+      let horasDedicadas = '';
+      let esNocturno = false;
+      let diffMin = 0;
+
+      if (esCierre) {
+        horaFin = '';
+        horasDedicadas = '';
+      } else {
+        if (!horaFin || horaFin.length < 3) {
+          mostrarToast("⚠️ Ingresa la Hora Fin (ej: 1000).", "toast-warning");
+          return false;
+        }
+        minF = convertirHoraAMinutos(horaFin);
+        if (minF === null) {
+          mostrarToast("⚠️ Hora Fin inválida (horas 00-23 y minutos 00-59).", "toast-danger");
+          return false;
+        }
+        if (minI === minF) {
+          mostrarToast("⚠️ La Hora Fin no puede ser igual a la Hora Inicio.", "toast-danger");
+          return false;
+        }
+        
+        diffMin = calcularDiferenciaMinutos(minI, minF);
+
+        // CONDICIÓN ESTRICTA: Límite de 16 horas por labor individual
+        if (diffMin > LIMITE_MAXIMO_MINUTOS) {
+          mostrarToast(`⚠️ La labor no puede superar 16 horas (${Math.floor(diffMin/60)}h ${diffMin%60}m).`, "toast-danger");
+          return false;
+        }
+
+        // CONDICIÓN ESTRICTA: Límite de 16 horas en la jornada acumulada del día
+        let minutosPrevios = calcularMinutosTotalesActualesDelDia(idEditandoActualmente);
+        if (minutosPrevios + diffMin > LIMITE_MAXIMO_MINUTOS) {
+          let totalFinal = minutosPrevios + diffMin;
+          mostrarToast(`⚠️ La jornada diaria total (${Math.floor(totalFinal/60)}h ${totalFinal%60}m) superaría el tope de 16 horas.`, "toast-danger");
+          return false;
+        }
+
+        horasDedicadas = minutosAHHMMSS(diffMin);
+        esNocturno = minF < minI;
+      }
+
+      if (!centroTrabajo) {
+        mostrarToast("⚠️ Selecciona el Centro de Trabajo.", "toast-warning");
+        return false;
+      }
+      if (!actividad) {
+        mostrarToast("⚠️ Selecciona la Actividad.", "toast-warning");
+        return false;
+      }
+      if (!maquina) {
+        mostrarToast("⚠️ Selecciona la Máquina.", "toast-warning");
+        return false;
+      }
+
+      // EDICIÓN: si cambia la hora fin, la labor siguiente debe iniciar a esa misma hora (con confirmación)
+      let siguiente = null;
+      if (idEditandoActualmente && !esCierre) {
+        let delDia = registrosDelDia();
+        let pos = delDia.findIndex(r => r.idRegistro === idEditandoActualmente);
+        siguiente = pos > -1 ? (delDia[pos + 1] || null) : null;
+        if (siguiente && convertirHoraAMinutos(siguiente.horaInicio) === minF) siguiente = null; // ya coincide
+
+        if (siguiente) {
+          let actual = delDia[pos];
+          let textoSiguiente;
+          if (siguiente.esCierre) {
+            textoSiguiente = `la hora de <b>salida (Fin jornada)</b> de la labor <b>#${escaparHtml(siguiente.item)}</b> cambiará de <b>${normalizarHoraTexto(siguiente.horaInicio)}</b> a <b>${normalizarHoraTexto(horaFin)}</b>.`;
+          } else {
+            let minFSig = convertirHoraAMinutos(siguiente.horaFin);
+            let nuevaDuracion = calcularDiferenciaMinutos(minF, minFSig);
+            if (minFSig === minF || nuevaDuracion > LIMITE_MAXIMO_MINUTOS) {
+              mostrarAviso('No se puede aplicar', `La nueva hora fin (<b>${normalizarHoraTexto(horaFin)}</b>) llega o pasa la hora fin de la labor <b>#${escaparHtml(siguiente.item)}</b> (<b>${normalizarHoraTexto(siguiente.horaFin)}</b>), que quedaría sin tiempo.<br><br>Edita o elimina primero la labor #${escaparHtml(siguiente.item)}.`);
+              return false;
+            }
+            let totalNuevo = calcularMinutosTotalesActualesDelDia(idEditandoActualmente) - duracionLabor(siguiente) + nuevaDuracion + diffMin;
+            if (totalNuevo > LIMITE_MAXIMO_MINUTOS) {
+              mostrarToast(`⚠️ La jornada diaria total (${Math.floor(totalNuevo/60)}h ${totalNuevo%60}m) superaría el tope de 16 horas.`, "toast-danger");
+              return false;
+            }
+            textoSiguiente = `la <b>hora inicio</b> de la labor <b>#${escaparHtml(siguiente.item)}</b> cambiará de <b>${normalizarHoraTexto(siguiente.horaInicio)}</b> a <b>${normalizarHoraTexto(horaFin)}</b> y su duración pasará de <b>${minutosAHHMMSS(duracionLabor(siguiente)).slice(0, 5)}</b> a <b>${minutosAHHMMSS(nuevaDuracion).slice(0, 5)}</b>.`;
+          }
+          if (!confirmadoAjuste) {
+            mostrarAviso('Ajustar labor siguiente',
+              `Vas a cambiar la <b>hora fin</b> de la labor <b>#${escaparHtml(actual.item)}</b> de <b>${normalizarHoraTexto(actual.horaFin)}</b> a <b>${normalizarHoraTexto(horaFin)}</b>.<br><br>Para que las horas coincidan, ${textoSiguiente}<br><br>¿Deseas aplicar el cambio?`,
+              () => guardarFilaLocal(true), 'Aceptar y ajustar');
+            return false;
+          }
+        }
+      }
+
+      if (idEditandoActualmente) {
+        let index = historialLocal.findIndex(r => r.idRegistro === idEditandoActualmente);
+        if (siguiente) {
+          siguiente.horaInicio = horaFin;
+          recalcularLabor(siguiente);
+        }
+        if (index > -1) {
+          historialLocal[index].horaInicio = horaInicio;
+          historialLocal[index].horaFin = horaFin;
+          historialLocal[index].horasDedicadas = horasDedicadas;
+          historialLocal[index].esNocturno = esNocturno;
+          historialLocal[index].esCierre = esCierre;
+          historialLocal[index].numeroOrden = numeroOrden;
+          historialLocal[index].centroTrabajo = centroTrabajo;
+          historialLocal[index].actividad = actividad;
+          historialLocal[index].maquina = maquina;
+          mostrarToast(siguiente ? `✅ Labor actualizada y labor #${siguiente.item} ajustada.` : "✅ Labor actualizada.", "toast-success");
+        }
+        cancelarEdicion();
+      } else {
+        let registrosMismaFecha = historialLocal.filter(r => r.fechaReporte === fechaReporte && r.trabajador === trabajador);
+        let nuevoRegistro = {
+          idRegistro: 'reg_' + new Date().getTime(),
+          trabajador: trabajador,
+          fechaReporte: fechaReporte,
+          item: registrosMismaFecha.length + 1,
+          horaInicio: horaInicio,
+          horaFin: horaFin,
+          horasDedicadas: horasDedicadas,
+          esNocturno: esNocturno,
+          esCierre: esCierre,
+          numeroOrden: numeroOrden,
+          centroTrabajo: centroTrabajo,
+          actividad: actividad,
+          maquina: maquina
+        };
+
+        historialLocal.push(nuevoRegistro);
+        mostrarToast(esCierre ? "🏁 Fin de jornada guardado. Jornada cerrada: solo puedes editar." : (esLaborPermiso({ actividad: actividad }) ? "📋 Permiso guardado. Jornada cerrada: solo puedes editar." : "✅ Labor agregada a la planilla."), "toast-success");
+
+        document.getElementById('esCierreCheck').checked = false;
+        toggleModoCierre(false); // Limpia orden, centro, actividad y máquina
+        document.getElementById('horaFin').value = '';
+        document.getElementById('duracionEnVivo').innerText = '00:00:00';
+
+        // Herencia automática inmediata: hora inicio hereda la hora fin de la labor agregada
+        if (!esCierre && horaFin) {
+          let inputInicio = document.getElementById('horaInicio');
+          inputInicio.value = horaFin;
+          inputInicio.readOnly = true;
+          let hint = document.getElementById('horaInicioLockHint');
+          if (hint) {
+            hint.style.display = 'block';
+            hint.innerText = '🔒 Heredada de fin previa (' + normalizarHoraTexto(horaFin) + ')';
+          }
+        }
+      }
+
+      guardarHistorialLocal();
+      actualizarInterfazCompleta();
+      return true;
+    }
+
+    function editarFila(idRegistro) {
+      let reg = historialLocal.find(r => r.idRegistro === idRegistro);
+      if (!reg) return;
+
+      idEditandoActualmente = idRegistro;
+
+      // Primero el modo (toggleModoCierre limpia orden/centro/actividad/máquina) y después los valores de la labor
+      document.getElementById('esCierreCheck').checked = !!reg.esCierre;
+      toggleModoCierre(!!reg.esCierre);
+
+      document.getElementById('horaInicio').value = reg.horaInicio;
+      document.getElementById('horaInicio').readOnly = false;
+      document.getElementById('horaInicioLockHint').style.display = 'none';
+      if (!reg.esCierre) document.getElementById('horaFin').value = reg.horaFin;
+      document.getElementById('numeroOrden').value = reg.numeroOrden === "0" ? "" : reg.numeroOrden;
+      document.getElementById('centroTrabajo').value = reg.centroTrabajo;
+      document.getElementById('actividad').value = reg.actividad;
+      document.getElementById('maquina').value = reg.maquina;
+
+      validarHorasEnVivo();
+
+      document.getElementById('modoEdicionBanner').style.display = 'flex';
+      document.getElementById('btnAgregar').innerText = '💾 Guardar Cambios';
+      document.getElementById('formTitle').innerText = `✏️ Editando Labor #${reg.item}`;
+
+      actualizarBloqueoPaneles();
+      document.getElementById('horaInicio').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function cancelarEdicion() {
+      idEditandoActualmente = null;
+      document.getElementById('modoEdicionBanner').style.display = 'none';
+      document.getElementById('esCierreCheck').checked = false;
+      toggleModoCierre(false); // Limpia orden, centro, actividad y máquina
+      document.getElementById('formTitle').innerText = '➕ Ingresar Nueva Labor';
+      document.getElementById('horaFin').value = '';
+      document.getElementById('duracionEnVivo').innerText = '00:00:00';
+
+      sincronizarCamposFormularioContinuo();
+      actualizarBloqueoPaneles();
+    }
+
+    function eliminarFila(idRegistro) {
+      if (!confirm("¿Deseas eliminar esta labor de tu planilla del día?")) return;
+
+      historialLocal = historialLocal.filter(r => r.idRegistro !== idRegistro);
+      
+      let fechaSel = document.getElementById('fechaReporte').value;
+      let trabajador = document.getElementById('trabajador').value.trim();
+      let contador = 1;
+      historialLocal.forEach(r => {
+        if (r.fechaReporte === fechaSel && r.trabajador === trabajador) {
+          r.item = contador++;
+        }
+      });
+
+      if (idEditandoActualmente === idRegistro) {
+        cancelarEdicion();
+      }
+
+      guardarHistorialLocal();
+      actualizarInterfazCompleta();
+      mostrarToast("🗑️ Labor eliminada.", "toast-warning");
+    }
+
+    function renderizarTabla() {
+      let tbody = document.getElementById('cuerpoTabla');
+      tbody.innerHTML = '';
+
+      let fechaSel = document.getElementById('fechaReporte').value;
+      let trabajador = document.getElementById('trabajador').value.trim();
+      let registros = trabajador ? historialLocal.filter(r => r.fechaReporte === fechaSel && r.trabajador === trabajador) : [];
+
+      document.getElementById('contadorLabores').innerText = `${registros.length} labores`;
+
+      let totalMinutos = 0;
+
+      if (registros.length > 0) {
+        document.getElementById('mensaje-vacio').style.display = 'none';
+        document.getElementById('btnAbrirModal').style.display = 'flex';
+
+        let idsConCorte = new Set(detectarCortesHorario(registros).map(c => c.siguiente.idRegistro));
+
+        registros.forEach((fila) => {
+          totalMinutos += duracionLabor(fila);
+          let hayCorte = idsConCorte.has(fila.idRegistro);
+
+          let codCentro = extraerCodigo(fila.centroTrabajo);
+          let codAct = extraerCodigo(fila.actividad);
+          let codMaq = extraerCodigo(fila.maquina);
+          let nightBadge = fila.esNocturno ? '<span style="color:#6366f1; font-weight:bold; font-size:10px;">🌙</span>' : '';
+          let cierreBadge = fila.esCierre ? '<span class="badge-cierre">🏁 Fin</span>' : '';
+
+          let horaFinTexto = fila.esCierre ? '-' : normalizarHoraTexto(fila.horaFin);
+          
+          // COMPACTAR DEDICADAS: QUITAR SEGUNDOS (SOLO 4 DÍGITOS HH:MM)
+          let duracionCorta = '-';
+          if (!fila.esCierre && fila.horasDedicadas) {
+            let partesDedic = fila.horasDedicadas.split(':');
+            duracionCorta = partesDedic.length >= 2 ? `${partesDedic[0]}:${partesDedic[1]}` : fila.horasDedicadas;
+          }
+
+          let tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><b>${escaparHtml(fila.item)}</b></td>
+            <td${hayCorte ? ' class="celda-error" title="No coincide con la hora fin de la labor anterior"' : ''}>${hayCorte ? '⚠️' : ''}${escaparHtml(normalizarHoraTexto(fila.horaInicio))}</td>
+            <td>${escaparHtml(horaFinTexto)}${nightBadge}${cierreBadge}</td>
+            <td><b>${escaparHtml(duracionCorta)}</b></td>
+            <td><span class="badge-orden">${escaparHtml(fila.numeroOrden)}</span></td>
+            <td title="${escaparHtml(fila.centroTrabajo)}"><b>${escaparHtml(codCentro)}</b></td>
+            <td title="${escaparHtml(fila.actividad)}"><b>${escaparHtml(codAct)}</b></td>
+            <td title="${escaparHtml(fila.maquina)}"><b style="color:#004b87;">${escaparHtml(codMaq)}</b></td>
+            <td>
+              <div class="table-actions">
+                <button type="button" class="btn-action btn-edit" onclick="editarFila('${fila.idRegistro}')" title="Editar">✏️</button>
+                <button type="button" class="btn-action btn-delete" onclick="eliminarFila('${fila.idRegistro}')" title="Eliminar">🗑️</button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } else {
+        document.getElementById('mensaje-vacio').style.display = 'block';
+        document.getElementById('btnAbrirModal').style.display = 'none';
+      }
+
+      document.getElementById('totalHoras').innerText = minutosAHHMMSS(totalMinutos);
+      actualizarBadgeJornada(totalMinutos);
+    }
+
+    function actualizarBadgeJornada(totalMinutos) {
+      let badge = document.getElementById('badgeJornadaExtra');
+      if (totalMinutos === 0) {
+        badge.className = 'summary-badge-extra extra-pending';
+        badge.innerText = 'Meta Ordinaria: 09:19:00';
+      } else if (totalMinutos < MINUTOS_JORNADA_ORDINARIA) {
+        let faltan = MINUTOS_JORNADA_ORDINARIA - totalMinutos;
+        let h = Math.floor(faltan / 60);
+        let m = faltan % 60;
+        badge.className = 'summary-badge-extra extra-pending';
+        badge.innerText = `Faltan ${h}h ${m}m para ordinaria`;
+      } else if (totalMinutos === MINUTOS_JORNADA_ORDINARIA) {
+        badge.className = 'summary-badge-extra extra-complete';
+        badge.innerText = '✅ Jornada Ordinaria Completa (9h 19m)';
+      } else {
+        let extraMin = totalMinutos - MINUTOS_JORNADA_ORDINARIA;
+        let h = Math.floor(extraMin / 60);
+        let m = extraMin % 60;
+        badge.className = 'summary-badge-extra extra-overtime';
+        badge.innerText = `⭐ Horas Extras: +${h}h ${m}m`;
+      }
+    }
+
+    /* HELPERS PARA EXTRAER CÓDIGOS Y NOMBRES SEGÚN FO-000 */
+    function extraerCodigo(texto) {
+      if (!texto) return '';
+      if (texto.includes(' - ')) return texto.split(' - ')[0].trim();
+      return texto.split(' ')[0].trim();
+    }
+
+    /* MODAL DE VISTA PREVIA */
+    function abrirModalConfirmacion() {
+      let trabajador = document.getElementById('trabajador').value.trim();
+      let fechaSel = document.getElementById('fechaReporte').value;
+      let registros = historialLocal.filter(r => r.fechaReporte === fechaSel && (!trabajador || r.trabajador === trabajador));
+
+      if (!trabajador) {
+        mostrarToast("⚠️ Selecciona tu nombre en Trabajador antes de enviar.", "toast-warning");
+        document.getElementById('trabajador').focus();
+        return;
+      }
+      if (registros.length === 0) {
+        mostrarToast("⚠️ No hay labores en la planilla para esta fecha.", "toast-warning");
+        return;
+      }
+
+      // VALIDADOR: antes de enviar, todas las horas deben quedar en cadena
+      let cortes = detectarCortesHorario(registros);
+      if (cortes.length > 0) {
+        let lista = cortes.map(c =>
+          `<li>La labor <b>#${escaparHtml(c.siguiente.item)}</b> inicia a las <b>${normalizarHoraTexto(c.siguiente.horaInicio)}</b>, pero la <b>#${escaparHtml(c.anterior.item)}</b> termina a las <b>${normalizarHoraTexto(c.anterior.horaFin)}</b>.</li>`
+        ).join('');
+        mostrarAviso('Horas que no coinciden',
+          `Cada labor debe iniciar a la hora en que termina la anterior. Se encontraron <b>${cortes.length}</b> diferencia(s):<ul>${lista}</ul><br>¿Deseas que la app ajuste automáticamente la hora inicio de esas labores?`,
+          () => { if (ajustarCadenaHorario(registros)) abrirModalConfirmacion(); }, 'Ajustar horas');
+        return;
+      }
+
+      let partesTrab = trabajador.split(' ');
+      let codigoTrab = partesTrab[0] || '';
+      let nombreTrab = partesTrab.slice(1).join(' ') || trabajador;
+
+      document.getElementById('fopnFecha').innerText = fechaSel;
+      document.getElementById('fopnDiaSemana').innerText = obtenerNombreDiaSemana(fechaSel).toUpperCase();
+      document.getElementById('fopnNo').innerText = '1';
+      document.getElementById('fopnTrabajador').innerText = nombreTrab;
+      document.getElementById('fopnCodigo').innerText = codigoTrab;
+
+      let tbody = document.getElementById('fopnCuerpoTabla');
+      tbody.innerHTML = '';
+      let totalMin = 0;
+
+      // REQUISITO: EXACTAS 6 COLUMNAS, SOLO "HORA DE INICIO", CÓDIGOS PARA CENTRO, ACT Y MÁQUINA
+      registros.forEach(r => {
+        if (!r.esCierre && r.horaFin) {
+          let minI = convertirHoraAMinutos(r.horaInicio);
+          let minF = convertirHoraAMinutos(r.horaFin);
+          if (minI !== null && minF !== null) totalMin += calcularDiferenciaMinutos(minI, minF);
+        }
+
+        let codigoCentro = extraerCodigo(r.centroTrabajo);
+        let codigoActividad = extraerCodigo(r.actividad);
+        let codigoMaquina = extraerCodigo(r.maquina);
+
+        let tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><b>${escaparHtml(r.item)}</b></td>
+          <td>${escaparHtml(normalizarHoraTexto(r.horaInicio))}</td>
+          <td>${escaparHtml(r.numeroOrden)}</td>
+          <td>${escaparHtml(codigoCentro)}</td>
+          <td>${escaparHtml(codigoActividad)}</td>
+          <td><b style="color:#004b87;">${escaparHtml(codigoMaquina)}</b></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('fopnTotalHoras').innerText = minutosAHHMMSS(totalMin);
+
+      let ordMin = Math.min(totalMin, MINUTOS_JORNADA_ORDINARIA);
+      let extMin = Math.max(0, totalMin - MINUTOS_JORNADA_ORDINARIA);
+      let hO = Math.floor(ordMin / 60); let mO = ordMin % 60;
+      let hE = Math.floor(extMin / 60); let mE = extMin % 60;
+
+      document.getElementById('fopnDetalleOrdinariasExtra').innerHTML = 
+        `Ord: ${hO}h ${mO}m | Ext: ${hE}h ${mE}m`;
+
+      document.getElementById('modalConfirmacion').style.display = 'flex';
+    }
+
+    function cerrarModal() {
+      document.getElementById('modalConfirmacion').style.display = 'none';
+    }
+
+    function confirmarEnvioPlanilla() {
+      let trabajador = document.getElementById('trabajador').value.trim();
+      let fechaSel = document.getElementById('fechaReporte').value;
+      let registros = historialLocal.filter(r => r.fechaReporte === fechaSel && r.trabajador === trabajador);
+
+      let totalMinJornada = 0;
+      let tienePermiso = false;
+
+      registros.forEach(r => {
+        if (!r.esCierre && r.horaFin) {
+          let minI = convertirHoraAMinutos(r.horaInicio);
+          let minF = convertirHoraAMinutos(r.horaFin);
+          if (minI !== null && minF !== null) totalMinJornada += calcularDiferenciaMinutos(minI, minF);
+        }
+
+        let act = String(r.actividad || '').toUpperCase();
+        if (act.startsWith('23') || act.includes('PERMISO')) {
+          tienePermiso = true;
+        }
+      });
+
+      if (totalMinJornada > LIMITE_MAXIMO_MINUTOS) {
+        mostrarToast("⚠️ La jornada total supera el tope máximo permitido de 16 horas.", "toast-danger");
+        return;
+      }
+
+      let btn = document.getElementById('btnConfirmarEnvio');
+      btn.disabled = true;
+      btn.innerText = "⏳ Guardando en Sheets...";
+
+      if (typeof google === 'undefined' || !google.script || !google.script.run) {
+        setTimeout(() => {
+          let ordMin = Math.min(totalMinJornada, MINUTOS_JORNADA_ORDINARIA);
+          let extMin = Math.max(0, totalMinJornada - MINUTOS_JORNADA_ORDINARIA);
+          let mockResumen = {
+            totalHoras: minutosAHHMMSS(totalMinJornada),
+            horasOrdinarias: minutosAHHMMSS(ordMin),
+            horasExtras: minutosAHHMMSS(extMin),
+            minutosTotales: totalMinJornada,
+            minutosExtras: extMin,
+            hExtras: Math.floor(extMin / 60),
+            mExtras: extMin % 60
+          };
+          limpiarTodoElTableroTrasEnvio(registros, fechaSel);
+          btn.disabled = false;
+          btn.innerText = "✅ Confirmar y Enviar";
+          abrirModalExito(trabajador, fechaSel, mockResumen, null, tienePermiso);
+        }, 1200);
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(function(resp) {
+          btn.disabled = false;
+          btn.innerText = "✅ Confirmar y Enviar";
+          if (resp && resp.success) {
+            limpiarTodoElTableroTrasEnvio(registros, fechaSel);
+            abrirModalExito(trabajador, fechaSel, resp.resumen, resp.estadoTrabajador, tienePermiso);
+          } else {
+            mostrarToast("⚠️ " + (resp ? resp.mensaje : "Error desconocido al guardar."), "toast-danger");
+            cerrarModal();
+            sincronizarDatosConBackend(); // Si la jornada ya existía en Sheets, se muestra bloqueada
+          }
+        })
+        .withFailureHandler(function(err) {
+          btn.disabled = false;
+          btn.innerText = "✅ Confirmar y Enviar";
+          mostrarToast("⚠️ Error al guardar en Sheets: " + (err.message || err), "toast-danger");
+        })
+        .guardarPlanillaLote(registros);
+    }
+
+    /* MODAL DE RESUMEN AMIGABLE TRAS EL ENVÍO */
+    function abrirModalExito(trabajador, fechaSel, resumen, nuevoEstado, tienePermiso = false) {
+      let elTituloModal = document.getElementById('exitoTituloModal');
+      if (elTituloModal) {
+        elTituloModal.innerText = `🎉 Tu día ${formatearFechaCorta(fechaSel)} fue registrado con éxito`;
+      }
+      document.getElementById('exitoSubtitulo').innerText = 
+        `${trabajador} • ${formatearFechaTextoLargo(fechaSel)}`;
+
+      let totalMin = resumen ? (resumen.minutosTotales || 0) : 0;
+      let totalHorasStr = resumen ? (resumen.totalHoras || '00:00:00') : '00:00:00';
+      let ordHorasStr = resumen ? (resumen.horasOrdinarias || '00:00:00') : '00:00:00';
+      let minExt = resumen ? (resumen.minutosExtras || 0) : 0;
+
+      document.getElementById('exitoTotalHoras').innerText = totalHorasStr;
+      document.getElementById('exitoHorasOrd').innerText = ordHorasStr;
+
+      let subOrd = document.getElementById('exitoSubHorasOrd');
+      let alertaMinimas = document.getElementById('exitoAlertaHorasMinimas');
+
+      // 1. EVALUAR CUMPLIMIENTO DE HORAS ORDINARIAS (MÍNIMO 9H 19M) CON EXCEPCIÓN DE PERMISO
+      if (totalMin >= MINUTOS_JORNADA_ORDINARIA) {
+        if (subOrd) subOrd.innerText = '✅ Meta cumplida';
+        if (alertaMinimas) {
+          alertaMinimas.innerHTML = `
+            <div class="success-complete-box">
+              ✅ <b>Jornada completa:</b> Cumpliste con las horas de la jornada ordinaria requerida (9h 19m).
+            </div>
+          `;
+        }
+      } else {
+        let faltan = MINUTOS_JORNADA_ORDINARIA - totalMin;
+        let hFalta = Math.floor(faltan / 60);
+        let mFalta = faltan % 60;
+        let strFalta = `${hFalta}h ${mFalta}m`;
+        if (subOrd) subOrd.innerText = `Faltaron ${strFalta}`;
+
+        if (alertaMinimas) {
+          if (tienePermiso) {
+            // EXCEPCIÓN: Registró permiso
+            alertaMinimas.innerHTML = `
+              <div class="success-notice-box">
+                📋 <b>Jornada reducida justificada con Permiso:</b> Registraste permiso en tu planilla, por lo que se justifica no haber alcanzado la meta ordinaria de 9h 19m.
+              </div>
+            `;
+          } else {
+            // ALERTA: No cumplió con las horas mínimas
+            alertaMinimas.innerHTML = `
+              <div class="success-warning-box">
+                ⚠️ <b>Atención:</b> No cumpliste con las horas mínimas de la jornada ordinaria (9h 19m). Tu tiempo laborado fue de <b>${Math.floor(totalMin/60)}h ${totalMin%60}m</b> (te faltaron <b>${strFalta}</b>).
+              </div>
+            `;
+          }
+        }
+      }
+
+      // 2. HORAS EXTRAS
+      let elExt = document.getElementById('exitoHorasExt');
+      let subExt = document.getElementById('exitoSubHorasExt');
+      if (minExt > 0) {
+        let hE = Math.floor(minExt / 60);
+        let mE = minExt % 60;
+        elExt.innerText = `+${hE}h ${mE}m ⭐`;
+        elExt.className = 'success-metric-val success-metric-extra';
+        if (subExt) subExt.innerText = 'Horas extras logradas';
+      } else {
+        elExt.innerText = '00:00:00';
+        elExt.className = 'success-metric-val';
+        if (subExt) subExt.innerText = 'Sin horas extras';
+      }
+
+      // 3. ALERTA DE DÍAS QUE DEBE
+      let statusBox = document.getElementById('exitoStatusBox');
+      let diasPendientes = nuevoEstado ? nuevoEstado.totalDiasPendientes : totalDiasPendientesTrabajador;
+      let primerPendiente = nuevoEstado ? nuevoEstado.primerDiaPendiente : primerDiaPendienteTrabajador;
+
+      if (diasPendientes === 0 || !primerPendiente) {
+        statusBox.className = 'success-status-box success-status-uptodate';
+        statusBox.innerHTML = `
+          <b>✅ ¡Excelente trabajo!</b><br>
+          Estás completamente al día con todos tus reportes de planilla en la base de datos.
+        `;
+      } else {
+        statusBox.className = 'success-status-box success-status-pending';
+        statusBox.innerHTML = `
+          <b>⚠️ Planillas pendientes:</b> Aún debes <b>${diasPendientes} día(s) hábiles</b> por reportar.<br>
+          Día pendiente más antiguo: <b>${formatearFechaTextoLargo(primerPendiente)}</b>.
+        `;
+      }
+
+      document.getElementById('modalExitoEnvio').style.display = 'flex';
+    }
+
+    function cerrarModalExito() {
+      document.getElementById('modalExitoEnvio').style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* HARD RESET TRAS EL ENVÍO: Pasa a la página con todo limpio listo para un nuevo reporte */
+    function limpiarTodoElTableroTrasEnvio(registrosEnviados, fechaEnviada) {
+      let idsEnviados = registrosEnviados.map(r => r.idRegistro);
+      historialLocal = historialLocal.filter(r => !idsEnviados.includes(r.idRegistro));
+      guardarHistorialLocal();
+
+      // 1. Limpiar completamente el selector de trabajador y su estado (el siguiente operario empieza de cero)
+      document.getElementById('trabajador').value = '';
+      borrarStorage('trabajadorGuardado');
+      actualizarTarjetaOperario('');
+      aplicarEstadoTrabajador(null);
+
+      // 2. Restablecer fecha a hoy
+      document.getElementById('fechaReporte').value = obtenerFechaHoyString();
+      borrarStorage('fechaReporteGuardada');
+
+      // 3. Limpiar todas las casillas del formulario (cancelarEdicion limpia fin, orden, centro, actividad, máquina y cierre)
+      document.getElementById('horaInicio').value = '';
+      document.getElementById('horaInicio').readOnly = false;
+      document.getElementById('horaInicioLockHint').style.display = 'none';
+
+      cerrarModal();
+      cancelarEdicion();
+      actualizarInterfazCompleta();
+      sincronizarDatosConBackend();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    let temporizadorToast = null;
+    function mostrarToast(mensaje, clase = "toast-success") {
+      let toast = document.getElementById('toast');
+      toast.className = `show ${clase}`;
+      toast.innerText = mensaje;
+      clearTimeout(temporizadorToast); // Un toast nuevo no debe ocultarse con el temporizador del anterior
+      temporizadorToast = setTimeout(() => {
+        toast.className = '';
+      }, 3500);
+    }
+  </script>
+</body>
+</html>
