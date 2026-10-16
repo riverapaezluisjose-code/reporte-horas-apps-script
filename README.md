@@ -43,6 +43,7 @@
 ## 📑 Contenido
 
 - [📘 **Manual de uso** (documento aparte)](docs/MANUAL.md)
+- [📈 Contexto e impacto en los datos](#-contexto-e-impacto-en-los-datos)
 - [✨ Características](#-características)
 - [🏗️ Cómo funciona](#️-cómo-funciona)
 - [🚀 Instalación en 5 pasos](#-instalación-en-5-pasos)
@@ -52,6 +53,67 @@
 - [🔒 Seguridad y calidad de datos](#-seguridad-y-calidad-de-datos)
 - [📁 Estructura del repositorio](#-estructura-del-repositorio)
 - [📄 Licencia](#-licencia)
+
+---
+
+## 📈 Contexto e impacto en los datos
+
+> **En una frase:** este proyecto no empezó como una app, sino como un problema de **calidad de datos**. En lugar de seguir limpiando datos sucios al final, se rediseñó la captura para que los datos **nazcan limpios**.
+
+### 🏭 El proceso real en planta
+
+Por seguridad, los operarios **no pueden usar el celular durante la jornada**. Por eso el registro tiene dos momentos:
+
+```mermaid
+flowchart LR
+    A["🛠️ Durante la jornada<br/>el operario anota sus labores<br/>en una planilla de papel"] --> B["🏁 Al terminar<br/>con la planilla en la mano<br/>pasa las labores al celular"]
+    B --> C["🗂️ Hoja de cálculo<br/>base para indicadores<br/>y nómina"]
+
+    style A fill:#fef3c7,stroke:#f59e0b,color:#78350f
+    style B fill:#004b87,stroke:#002f56,color:#fff
+    style C fill:#dcfce7,stroke:#16a34a,color:#14532d
+```
+
+El paso a digital es el punto donde se cuelan los errores, y es justo ahí donde actúa la app.
+
+### ❌ Antes: un formulario plano
+
+El registro se hacía con un formulario genérico de encuestas:
+
+- **Una sección por cada labor**, repetida hasta **25 veces**. El operario avanzaba sección por sección, digitando cada labor a mano.
+- **Formato "ancho":** cada respuesta quedaba en **una sola fila gigante**, con el mismo grupo de columnas repetido 25 veces (más de 150 columnas). Antes de poder analizar nada había que reorganizar la tabla.
+- **Todo era texto libre:** el nombre del trabajador, la máquina y la actividad se escribían a mano, sin listas, sin validaciones de texto o números y sin límite de caracteres.
+- **Resultado:** la misma máquina o persona escrita de varias formas distintas, horas imposibles, labores que se solapaban o dejaban huecos, y jornadas duplicadas o faltantes.
+- **Costo oculto:** la limpieza era **larga y tediosa**, y muchas veces había que **verificar contra la planilla de papel** del operario para saber cuál era el dato correcto.
+
+### ✅ Después: captura diseñada para el análisis
+
+| Problema de antes | Cómo lo resuelve la app | Efecto en los datos |
+|---|---|---|
+| Nombres, máquinas y actividades digitados a mano | **Listas desplegables** alimentadas por una hoja maestra (`Consolidado Codigos`) | Catálogos consistentes: un código, un significado |
+| Sin validaciones | Solo se digitan **horas y número de orden**, siempre **numéricos** y con **longitud limitada** (4 dígitos) | Desaparecen los errores de tipeo en textos |
+| 25 secciones repetidas | **Una labor = una fila**, en formato largo de 11 columnas | Datos listos para analizar, sin reorganizar |
+| Labores solapadas o con huecos | **Horas en cadena:** cada labor inicia donde termina la anterior, con validador antes de enviar | Cada minuto de la jornada queda asignado una sola vez |
+| Horas imposibles | Formato militar validado (00:00-23:59), turnos nocturnos y tope de 16 h | Duraciones confiables |
+| Jornadas duplicadas o sin reportar | **Anti-duplicados** en el servidor + aviso de **días pendientes** | Cobertura completa por trabajador y día |
+| Cálculos manuales | Horas dedicadas, **ordinarias y extras** calculadas y validadas en el servidor | Base directa para nómina |
+| Verificar contra el papel | La **vista previa** reproduce el formato de la planilla física | El operario compara antes de enviar |
+| Formulario difícil en el celular | Interfaz móvil con **accesos rápidos** (descansos, permiso, fin de jornada) | Más adopción y menos errores |
+
+### 🗂️ La hoja como panel de administración
+
+Sin tocar código, el equipo administrativo puede **agregar o retirar trabajadores, máquinas, centros, actividades y festivos** directamente en la hoja de cálculo. La app refleja los cambios la próxima vez que se abre. Los catálogos viven en un solo lugar, y eso mantiene limpio el dato desde el origen.
+
+### 📊 Lo que habilita para el análisis
+
+Con datos que llegan limpios y en formato largo, el análisis pasa de **limpiar** a **entender**:
+
+- ⏱️ Horas **productivas vs. no productivas** (descansos, permisos, aseo) por trabajador y centro.
+- ⭐ **Horas extras** por semana, trabajador y área.
+- 🏭 **Utilización de máquinas** y cuellos de botella.
+- 📦 **Horas invertidas por orden de producción** (costeo).
+- 📅 **Cumplimiento del reporte** y días de atraso.
+- 💰 **Liquidación de nómina** a partir de ordinarias y extras ya validadas.
 
 ---
 
