@@ -13,6 +13,7 @@
 ![Móvil](https://img.shields.io/badge/dise%C3%B1o-mobile%20first-0284c7?style=flat-square)
 ![Sin dependencias](https://img.shields.io/badge/dependencias-0-6f42c1?style=flat-square)
 ![Demo](https://img.shields.io/badge/datos-100%25%20ficticios-f59e0b?style=flat-square)
+[![Licencia MIT](https://img.shields.io/badge/licencia-MIT-blue?style=flat-square)](LICENSE)
 
 <br>
 
@@ -42,6 +43,7 @@
 - [🎛️ Personalización](#️-personalización)
 - [🔒 Seguridad y calidad de datos](#-seguridad-y-calidad-de-datos)
 - [📁 Estructura del repositorio](#-estructura-del-repositorio)
+- [📄 Licencia](#-licencia)
 
 ---
 
@@ -248,6 +250,7 @@ python -m http.server 8765
 📦 reporte-horas-apps-script
  ┣ 📜 Codigo.gs            → Backend: doGet, listas, estado del trabajador, guardado y validaciones
  ┣ 🌐 Index.html           → Frontend: interfaz móvil completa (plantilla HtmlService)
+ ┣ 📄 LICENSE              → Licencia MIT
  ┣ 🖼️ docs/                → Capturas de la demo
  ┗ 🧪 pruebas/
     ┣ gas_mock.js          → Simulador de servicios de Apps Script
@@ -257,6 +260,12 @@ python -m http.server 8765
     ┣ frontend_tests.html  → 23 ensayos de la app
     ┗ setup.py             → Genera las páginas de prueba
 ```
+
+---
+
+## 📄 Licencia
+
+Distribuido bajo la **licencia MIT**: puedes usarlo, copiarlo, modificarlo y adaptarlo a tu empresa libremente, siempre que conserves el aviso de autoría. Detalles en [`LICENSE`](LICENSE).
 
 ---
 
